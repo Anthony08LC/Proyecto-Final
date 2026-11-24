@@ -1,0 +1,15 @@
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\bin\Debug\net10.0\QuoteFlow.Application.deps.json
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\bin\Debug\net10.0\QuoteFlow.Application.dll
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\bin\Debug\net10.0\QuoteFlow.Application.pdb
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\bin\Debug\net10.0\QuoteFlow.Domain.dll
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\bin\Debug\net10.0\QuoteFlow.Domain.pdb
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.csproj.AssemblyReference.cache
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.AssemblyInfoInputs.cache
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.AssemblyInfo.cs
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.csproj.CoreCompileInputs.cache
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlo.12678D9D.Up2Date
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.dll
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\refint\QuoteFlow.Application.dll
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\QuoteFlow.Application.pdb
+D:\Cursos\Desarrollo Asistido con Claude Code\Proyecto Final Claude\src\QuoteFlow.Application\obj\Debug\net10.0\ref\QuoteFlow.Application.dll
