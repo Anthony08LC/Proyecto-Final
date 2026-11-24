@@ -1,0 +1,149 @@
+# =============================================================
+# QuoteFlow AI — .gitignore
+# .NET 10 · React/Vite · VS Code · PostgreSQL
+# =============================================================
+
+# -------------------------------------------------------------
+# .NET: compilación y artefactos
+# -------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+[Ll]og/
+artifacts/
+publish/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+
+# NuGet
+packages/
+*.nuget.props
+*.nuget.targets
+.nuget/
+
+# Pruebas y cobertura
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+coverage/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+.coverage/
+
+# -------------------------------------------------------------
+# Visual Studio / Rider
+# -------------------------------------------------------------
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+.idea/
+*.DotSettings.user
+
+# -------------------------------------------------------------
+# VS Code: se comparten solo los archivos de configuración del equipo
+# -------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+*.vsix
+
+# -------------------------------------------------------------
+# Node / React / Vite
+# -------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+
+# -------------------------------------------------------------
+# Logs
+# -------------------------------------------------------------
+logs/
+*.log
+
+# -------------------------------------------------------------
+# Secretos y configuración local
+# -------------------------------------------------------------
+# Variables de entorno (se versiona solo la plantilla)
+.env
+.env.*
+!.env.example
+
+# appsettings locales (se versionan appsettings.json y appsettings.Development.json)
+appsettings.Local.json
+appsettings.*.Local.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# Certificados y claves
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+secrets.json
+*.secrets.json
+
+# Claude Code: configuración personal
+.claude/settings.local.json
+
+# -------------------------------------------------------------
+# PostgreSQL / Docker: datos y respaldos locales
+# -------------------------------------------------------------
+pgdata/
+postgres-data/
+*.dump
+*.backup
+*.sql.gz
+docker-compose.override.yml
+
+# -------------------------------------------------------------
+# Archivos temporales y del sistema operativo
+# -------------------------------------------------------------
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
