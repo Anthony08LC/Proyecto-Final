@@ -145,5 +145,9 @@ public sealed class DatabaseSeeder(
         var settings = Domain.Entities.SystemSettings.CreateDefault();
         settings.MarkCreated(systemUserId, now);
         dbContext.SystemSettings.Add(settings);
+
+        // La columna sombra "singleton" debe enviarse explícitamente en true: EF Core omite el valor
+        // por defecto de la base y envía false, lo que viola ck_system_settings_singleton.
+        dbContext.Entry(settings).Property("Singleton").CurrentValue = true;
     }
 }
