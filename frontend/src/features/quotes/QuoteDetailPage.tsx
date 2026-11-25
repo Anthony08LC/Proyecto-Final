@@ -6,6 +6,7 @@ import { Alert, Spinner } from '../../components/ui/Feedback'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { quoteDisplayNumber } from '../../lib/quoteStatus'
 import { BreakdownPanel } from './components/BreakdownPanel'
+import { QuoteActionsPanel } from './components/QuoteActionsPanel'
 import { QuoteHistory } from './components/QuoteHistory'
 import { QuoteLinesTable } from './components/QuoteLinesTable'
 import { QuoteStatusBadge } from './components/QuoteStatusBadge'
@@ -37,7 +38,7 @@ export function QuoteDetailPage() {
 }
 
 function QuoteView({ quote }: { quote: QuoteDetail }) {
-  const [, setTextsDirty] = useState(false)
+  const [textsDirty, setTextsDirty] = useState(false)
   const isEditable = quote.status === 'Draft' && quote.actions.canEdit
 
   return (
@@ -48,7 +49,11 @@ function QuoteView({ quote }: { quote: QuoteDetail }) {
         back={{ to: '/quotes', label: 'Cotizaciones' }}
       />
       {isEditable ? (
-        <QuoteEditor quote={quote} actions={null} onTextsDirtyChange={setTextsDirty} />
+        <QuoteEditor
+          quote={quote}
+          actions={<QuoteActionsPanel quote={quote} hasUnsavedTexts={textsDirty} />}
+          onTextsDirtyChange={setTextsDirty}
+        />
       ) : (
         <QuoteReadOnly quote={quote} />
       )}
@@ -74,6 +79,7 @@ function QuoteReadOnly({ quote }: { quote: QuoteDetail }) {
         </div>
         <aside className="quote-layout__side">
           <BreakdownPanel breakdown={quote.breakdown} />
+          <QuoteActionsPanel quote={quote} />
         </aside>
       </div>
     </>
