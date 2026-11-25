@@ -123,9 +123,28 @@ npm run build         # compilación de producción
 
 ## Producción
 
-El despliegue en Ubuntu Server (proxy inverso con HTTPS, servicio del backend, frontend estático y respaldos) **aún no está hecho**; ver la sección 13 de [plan.md](plan.md). Requisitos ya resueltos en el código para ese entorno:
+El despliegue en Ubuntu Server (proxy inverso con HTTPS, servicio del backend y frontend estático) **aún no está hecho**; los respaldos sí (ver más abajo); ver la sección 13 de [plan.md](plan.md). Requisitos ya resueltos en el código para ese entorno:
 
 - Fuera de Development la API fuerza HTTPS (HSTS y redirección) y no expone Swagger.
 - Los datos de demostración nunca se cargan fuera de Development: el seeder lo verifica y se niega.
 - Configure `Cors__AllowedOrigins__0` con el origen real del frontend y compile el frontend con `VITE_API_URL` apuntando a la API pública (`npm run build` genera `frontend/dist`).
 - El PDF usa QuestPDF con licencia Community; revise que sus condiciones apliquen a la organización.
+
+### Respaldo y restauración
+
+Los scripts de [scripts/backup/](scripts/backup/) cubren el respaldo diario automático de la base `quoteflow` (RNF-DIS-03) en el servidor Ubuntu con PostgreSQL 18:
+
+| Archivo | Qué hace |
+|---|---|
+| `backup.sh` | `pg_dump -Fc` a `/var/backups/quoteflow/quoteflow_AAAA-MM-DD.dump`, retención de 7 días y registro en `/var/backups/quoteflow/backup.log`. Se ejecuta como `postgres` por el socket local (autenticación peer), sin contraseñas |
+| `install.sh` | Crea la carpeta con dueño `postgres`, instala el script en `/usr/local/bin/quoteflow-backup.sh`, programa el cron diario a las 2:00 (`/etc/cron.d/quoteflow-backup`), hace un respaldo de prueba y lo restaura en una base temporal que compara con la original y luego elimina |
+| `restore.md` | Procedimiento de restauración paso a paso |
+
+Instalación desde Windows (reemplace `<usuario>` por un usuario con `sudo` en el servidor):
+
+```powershell
+scp -r scripts/backup <usuario>@192.168.0.50:/tmp/quoteflow-backup
+ssh -t <usuario>@192.168.0.50 "sudo bash /tmp/quoteflow-backup/install.sh"
+```
+
+Para restaurar, siga [scripts/backup/restore.md](scripts/backup/restore.md).

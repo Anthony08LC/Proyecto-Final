@@ -573,7 +573,7 @@ Las fases son secuenciales. Dentro de una fase, las tareas pueden ejecutarse en 
 - **Descripción:** PostgreSQL 18, usuarios de base de datos, aplicación de migraciones, servicio del backend, publicación del frontend, HTTPS y variables de entorno, según DT-08.
 - **Criterios:** el sistema funciona por HTTPS en el servidor; el primer arranque crea los datos iniciales; el procedimiento está documentado en el README.
 
-**T-092 · Respaldo y restauración** · E · Depende de: T-091 · RNF-DIS-03
+**T-092 · Respaldo y restauración** · E · Depende de: T-091 · RNF-DIS-03 · ✅ Completada (`scripts/backup/`)
 - **Descripción:** respaldo diario automático con retención y procedimiento de restauración.
 - **Criterios:** existe al menos un respaldo automático; una restauración en una base de pruebas funciona; el procedimiento está documentado.
 
@@ -930,7 +930,7 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 - **F5:** documento comercial en HTML y PDF (QuestPDF) con su interfaz.
 - **F6:** asistente con Gemini (T-075 a T-080): contexto mínimo, filtro de datos sensibles, tiempo límite, límite por usuario y auditoría.
 - **F7:** consulta de auditoría con filtros y paginación, solo Administrador (T-082, T-083), dashboard e interfaz de configuración.
-- **F8:** datos de demostración solo para Development (T-090).
+- **F8:** datos de demostración solo para Development (T-090). Respaldo y restauración (T-092): `scripts/backup/` con respaldo diario a las 2:00 por cron, retención de 7 días, registro y prueba de restauración automática en `install.sh`; procedimiento en `scripts/backup/restore.md`.
 - **F9:** `README.md`, `docs/negocio.md`, `docs/uso-ia.md` y `docs/demo.md` (T-095 a T-098).
 
 ### 13.2 Pendiente
@@ -947,7 +947,6 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 | T-088 | Pruebas de rendimiento | Deben medirse sobre el entorno desplegado |
 | T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (falta la de perfil) |
 | T-091 | Despliegue en Ubuntu Server (DT-08 sin decidir) | No hubo servidor disponible en el plazo; el README documenta los requisitos ya resueltos en el código |
-| T-092 | Respaldo y restauración automáticos | Depende del despliegue |
 | T-093 | Regresión del flujo principal en el entorno desplegado | Depende del despliegue; el flujo se verificó en desarrollo |
 | T-094 | Corrección de defectos de F8 | Depende de T-086 a T-093 |
 | T-099 | Sincronización final de documentos | Parcial: Anexo A actualizado y esta sección agregada; falta revisar `spec.md` contra el código cuando se cierren las tareas anteriores |
