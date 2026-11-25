@@ -1,0 +1,16 @@
+using QuoteFlow.Application.Common.Models;
+
+namespace QuoteFlow.Application.Abstractions.Services;
+
+/// <summary>Lectura del historial de eventos de auditoría (solo lectura).</summary>
+public interface IAuditEventReader
+{
+    /// <summary>
+    /// Obtiene los eventos de una entidad, del más antiguo al más reciente
+    /// (por ejemplo, el historial de una cotización: RF-COT-13).
+    /// </summary>
+    Task<IReadOnlyList<AuditEventRecord>> GetByEntityAsync(
+        AuditEntityType entityType,
+        Guid entityId,
+        CancellationToken cancellationToken = default);
+}

@@ -1,6 +1,23 @@
-@QuoteFlow.Api_HostAddress = http://localhost:5050
+@baseUrl = http://localhost:5050
+# Pegue aquí el token devuelto por el inicio de sesión.
+@token =
 
-GET {{QuoteFlow.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Estado de la API y la base de datos
+GET {{baseUrl}}/health
 
-###
+### Iniciar sesión
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "CambiarEsto123"
+}
+
+### Perfil del usuario autenticado
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Buscar cotizaciones
+GET {{baseUrl}}/api/quotes?status=Draft&page=1&pageSize=20
+Authorization: Bearer {{token}}
