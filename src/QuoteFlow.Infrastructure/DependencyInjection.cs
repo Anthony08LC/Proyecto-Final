@@ -71,6 +71,7 @@ public static class DependencyInjection
         // Datos iniciales.
         services.AddOptions<SeedOptions>().Bind(configuration.GetSection(SeedOptions.SectionName));
         services.AddScoped<DatabaseSeeder>();
+        services.AddScoped<DemoDataSeeder>();
 
         return services;
     }
@@ -84,6 +85,19 @@ public static class DependencyInjection
     {
         await using var scope = services.CreateAsyncScope();
         var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+        await seeder.SeedAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Carga los datos de demostración (sección 8.3, T-090). Solo en desarrollo: el seeder verifica el
+    /// entorno y se niega en cualquier otro. Debe ejecutarse después de <see cref="SeedDatabaseAsync"/>.
+    /// </summary>
+    public static async Task SeedDemoDataAsync(
+        this IServiceProvider services,
+        CancellationToken cancellationToken = default)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<DemoDataSeeder>();
         await seeder.SeedAsync(cancellationToken);
     }
 }

@@ -73,6 +73,12 @@ app.MapControllers();
 if (app.Configuration.GetValue<bool>("Database:SeedOnStartup"))
 {
     await app.Services.SeedDatabaseAsync();
+
+    // Datos de demostración (T-090): nunca fuera de desarrollo; el seeder también lo verifica.
+    if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("Database:SeedDemoData"))
+    {
+        await app.Services.SeedDemoDataAsync();
+    }
 }
 
 await app.RunAsync();
