@@ -218,3 +218,19 @@ export function cancelQuote(id: string, reason: string | null) {
 export function duplicateQuote(id: string) {
   return request<DuplicateQuoteResult>(`/api/quotes/${id}/duplicate`, { method: 'POST' })
 }
+
+/**
+ * Vista previa HTML del documento comercial, en cualquier estado (RF-DOC-01). Los borradores
+ * llevan marca de agua (RN-36). Se muestra en un marco aislado, sin scripts.
+ */
+export function getQuotePreview(id: string, signal?: AbortSignal) {
+  return request<string>(`/api/quotes/${id}/preview`, { accept: 'text/html', signal })
+}
+
+/** PDF de una cotización emitida (RF-DOC-02, RN-36). */
+export function getQuotePdf(id: string) {
+  return request<Blob>(`/api/quotes/${id}/pdf`, {
+    accept: 'application/pdf',
+    responseType: 'blob',
+  })
+}

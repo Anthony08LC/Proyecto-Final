@@ -19,6 +19,10 @@ export interface RequestOptions {
   signal?: AbortSignal
   /** Códigos de error que no lanzan excepción (por ejemplo, 503 del health check). */
   acceptStatus?: readonly number[]
+  /** Tipo de contenido esperado; por defecto JSON. */
+  accept?: string
+  /** `blob` para archivos (por ejemplo, el PDF); los errores siguen llegando como ProblemDetails. */
+  responseType?: 'json' | 'blob'
 }
 
 export interface HttpHooks {
@@ -53,10 +57,21 @@ export async function send<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<HttpResponse<T>> {
-  const { method = 'GET', body, query, signal, acceptStatus = [] } = options
+  const {
+    method = 'GET',
+    body,
+    query,
+    signal,
+    acceptStatus = [],
+    accept = 'application/json',
+    responseType = 'json',
+  } = options
   const token = hooks.getToken()
 
-  const headers: Record<string, string> = { Accept: 'application/json' }
+  // Los errores llegan siempre como ProblemDetails (JSON), aunque se pida HTML o un PDF.
+  const headers: Record<string, string> = {
+    Accept: accept === 'application/json' ? accept : `${accept}, application/problem+json`,
+  }
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json'
   }
@@ -78,6 +93,10 @@ export async function send<T>(
       throw error
     }
     throw ApiError.network()
+  }
+
+  if (response.ok && responseType === 'blob') {
+    return { status: response.status, data: (await response.blob()) as T }
   }
 
   const data = await readBody(response)

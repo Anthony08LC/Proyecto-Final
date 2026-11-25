@@ -9,6 +9,7 @@ import { quoteDisplayNumber } from '../../lib/quoteStatus'
 import { BreakdownPanel } from './components/BreakdownPanel'
 import { DuplicateQuoteButton, type DuplicatedState } from './components/DuplicateQuoteButton'
 import { QuoteActionsPanel } from './components/QuoteActionsPanel'
+import { DownloadPdfButton, QuoteDocumentPreview } from './components/QuoteDocument'
 import { QuoteHistory } from './components/QuoteHistory'
 import { QuoteLinesTable } from './components/QuoteLinesTable'
 import { QuoteStatusBadge } from './components/QuoteStatusBadge'
@@ -43,6 +44,7 @@ export function QuoteDetailPage() {
 
 function QuoteView({ quote }: { quote: QuoteDetail }) {
   const [textsDirty, setTextsDirty] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const isEditable = quote.status === 'Draft' && quote.actions.canEdit
   const duplicate = quote.actions.canDuplicate ? <DuplicateQuoteButton quote={quote} /> : null
 
@@ -52,8 +54,18 @@ function QuoteView({ quote }: { quote: QuoteDetail }) {
         title={quoteDisplayNumber(quote.number)}
         description={<QuoteStatusBadge status={quote.status} />}
         back={{ to: '/quotes', label: 'Cotizaciones' }}
+        actions={
+          <>
+            <Button onClick={() => setShowPreview((shown) => !shown)} aria-expanded={showPreview}>
+              {showPreview ? 'Ocultar vista previa' : 'Vista previa'}
+            </Button>
+            {/* El PDF solo existe para cotizaciones emitidas (RN-36). */}
+            {quote.actions.canDownloadPdf && <DownloadPdfButton quote={quote} />}
+          </>
+        }
       />
       <DuplicatedNotice />
+      {showPreview && <QuoteDocumentPreview quote={quote} onClose={() => setShowPreview(false)} />}
       {isEditable ? (
         <QuoteEditor
           quote={quote}
