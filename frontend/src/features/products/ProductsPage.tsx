@@ -23,7 +23,7 @@ export function ProductsPage() {
   const { isAdministrator } = useSession()
   const { values, page, setFilter, setPage } = useListParams(FILTER_KEYS)
   const { data, error, isPending, isPlaceholderData } = useProducts({
-    search: values.search || undefined,
+    search: values.search.trim() || undefined,
     categoryId: values.category || undefined,
     isActive: toBooleanFilter(values.status),
     page,
@@ -73,7 +73,7 @@ export function ProductsPage() {
           label="Buscar productos por nombre"
           placeholder="Buscar por nombre…"
           value={values.search}
-          onChange={(value) => setFilter('search', value.trim())}
+          onChange={(value) => setFilter('search', value)}
         />
         <select
           className="input input--select"
