@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import { useParams } from 'react-router'
+import { useState, type ReactNode } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { getErrorMessage } from '../../api/apiError'
 import type { QuoteDetail } from '../../api/quotes'
+import { Button } from '../../components/ui/Button'
 import { Alert, Spinner } from '../../components/ui/Feedback'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { quoteDisplayNumber } from '../../lib/quoteStatus'
 import { BreakdownPanel } from './components/BreakdownPanel'
+import { DuplicateQuoteButton, type DuplicatedState } from './components/DuplicateQuoteButton'
 import { QuoteActionsPanel } from './components/QuoteActionsPanel'
 import { QuoteHistory } from './components/QuoteHistory'
 import { QuoteLinesTable } from './components/QuoteLinesTable'
@@ -34,12 +36,15 @@ export function QuoteDetailPage() {
       </>
     )
   }
-  return <QuoteView quote={data} />
+  // La clave reinicia el editor (formularios y estado) al pasar de una cotización a otra,
+  // por ejemplo al duplicar o al seguir el enlace a la cotización de origen.
+  return <QuoteView key={data.id} quote={data} />
 }
 
 function QuoteView({ quote }: { quote: QuoteDetail }) {
   const [textsDirty, setTextsDirty] = useState(false)
   const isEditable = quote.status === 'Draft' && quote.actions.canEdit
+  const duplicate = quote.actions.canDuplicate ? <DuplicateQuoteButton quote={quote} /> : null
 
   return (
     <>
@@ -48,21 +53,26 @@ function QuoteView({ quote }: { quote: QuoteDetail }) {
         description={<QuoteStatusBadge status={quote.status} />}
         back={{ to: '/quotes', label: 'Cotizaciones' }}
       />
+      <DuplicatedNotice />
       {isEditable ? (
         <QuoteEditor
           quote={quote}
-          actions={<QuoteActionsPanel quote={quote} hasUnsavedTexts={textsDirty} />}
+          actions={
+            <QuoteActionsPanel quote={quote} hasUnsavedTexts={textsDirty}>
+              {duplicate}
+            </QuoteActionsPanel>
+          }
           onTextsDirtyChange={setTextsDirty}
         />
       ) : (
-        <QuoteReadOnly quote={quote} />
+        <QuoteReadOnly quote={quote} duplicate={duplicate} />
       )}
     </>
   )
 }
 
 /** Cotización emitida o cerrada, o borrador ajeno (Ventas solo modifica los suyos, RN-32). */
-function QuoteReadOnly({ quote }: { quote: QuoteDetail }) {
+function QuoteReadOnly({ quote, duplicate }: { quote: QuoteDetail; duplicate: ReactNode }) {
   return (
     <>
       {quote.status === 'Draft' && (
@@ -79,9 +89,47 @@ function QuoteReadOnly({ quote }: { quote: QuoteDetail }) {
         </div>
         <aside className="quote-layout__side">
           <BreakdownPanel breakdown={quote.breakdown} />
-          <QuoteActionsPanel quote={quote} />
+          <QuoteActionsPanel quote={quote}>{duplicate}</QuoteActionsPanel>
         </aside>
       </div>
     </>
+  )
+}
+
+/**
+ * Aviso del borrador recién duplicado (RF-COT-12): indica el origen y las líneas omitidas por
+ * tener productos inactivos (RN-25). Viene en el estado de la navegación; al cerrarlo se limpia.
+ */
+function DuplicatedNotice() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const state = location.state as DuplicatedState | null
+
+  if (!state?.duplicatedFrom) {
+    return null
+  }
+
+  const dismiss = () => navigate(location.pathname, { replace: true, state: null })
+  const omitted = state.omittedProducts
+
+  return (
+    <Alert
+      tone={omitted.length > 0 ? 'warning' : 'success'}
+      title={`Borrador creado a partir de ${state.duplicatedFrom}`}
+      actions={<Button onClick={dismiss}>Entendido</Button>}
+    >
+      {omitted.length > 0 ? (
+        <>
+          <p>Estas líneas no se copiaron porque sus productos están inactivos:</p>
+          <ul className="omitted-list">
+            {omitted.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>Se copiaron todas las líneas con los precios actuales del catálogo.</p>
+      )}
+    </Alert>
   )
 }

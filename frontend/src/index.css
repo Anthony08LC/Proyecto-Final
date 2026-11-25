@@ -638,6 +638,11 @@ a {
   margin: 0;
 }
 
+.omitted-list {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
 .editor-section {
   display: grid;
   gap: 14px;
