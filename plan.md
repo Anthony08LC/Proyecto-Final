@@ -27,6 +27,7 @@
 10. [Riesgos](#10-riesgos)
 11. [Definición de completado](#11-definición-de-completado)
 12. [Roadmap final](#12-roadmap-final)
+13. [Estado de la entrega v1.0.0 y pendientes](#13-estado-de-la-entrega-v100-y-pendientes)
 - [Anexo A. Registro de decisiones técnicas](#anexo-a-registro-de-decisiones-técnicas)
 - [Anexo B. Trazabilidad de requisitos a tareas](#anexo-b-trazabilidad-de-requisitos-a-tareas)
 
@@ -916,20 +917,60 @@ Primer commit
 
 ---
 
+## 13. Estado de la entrega v1.0.0 y pendientes
+
+Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de la sección 12: se priorizó el flujo de valor principal (F0 a F5), el asistente de IA (F6) y la documentación (F9). La etiqueta `v1.0.0` marca ese corte; **no** cumple todavía la definición de completado del proyecto (sección 11.3), porque faltan las tareas de abajo.
+
+### 13.1 Completado
+
+- **F0–F1:** documentos base, solución por capas, configuración y secretos por variables de entorno, errores (ProblemDetails) y logging, EF Core + PostgreSQL, reloj y zona horaria, frontend con cliente API y formatos regionales.
+- **F2:** usuarios, contraseñas, JWT con validación por solicitud, roles y propiedad, cambio obligatorio de contraseña, limitador de inicio de sesión, HTTPS y CORS, auditoría automática y concurrencia optimista; interfaz de inicio/cierre de sesión y cambio de contraseña. API de usuarios y de configuración.
+- **F3:** clientes, categorías y productos (API e interfaz).
+- **F4:** motor de cálculo con los 19 casos críticos (T-050), agregado Cotización, máquina de estados, consecutivo, emisión, aceptar/rechazar/cancelar, vencimiento automático, duplicación, consulta e interfaz completa (editor, acciones, detalle e historial, duplicación).
+- **F5:** documento comercial en HTML y PDF (QuestPDF) con su interfaz.
+- **F6:** asistente con Gemini (T-075 a T-080): contexto mínimo, filtro de datos sensibles, tiempo límite, límite por usuario y auditoría.
+- **F8:** datos de demostración solo para Development (T-090).
+- **F9:** `README.md`, `docs/negocio.md`, `docs/uso-ia.md` y `docs/demo.md` (T-095 a T-098).
+
+### 13.2 Pendiente
+
+| Tarea | Qué falta | Motivo |
+|---|---|---|
+| T-008 | Usuarios de base de datos separados (migraciones vs. aplicación) con permisos mínimos | Solo aplica al servidor; se hará junto con el despliegue (T-091). En desarrollo se usa una sola cadena de conexión |
+| T-016 | Integración continua | Prioridad D; se pospuso a favor del flujo principal según el punto de control de alcance |
+| T-031 | Pantalla de perfil | Prioridad I; la API de sesión existe, falta la interfaz. Se priorizaron las pantallas del flujo de cotización |
+| T-033 | Pantalla de gestión de usuarios | Prioridad I; la API (`UsersController`) está hecha. Hoy solo existe el Administrador inicial, creado por el seeding |
+| T-036 | Pantalla de configuración | La API (`SettingsController`) está hecha; falta la interfaz. Mientras tanto rige la configuración inicial (IVA 13 %, tramos 5 %/10 %, VIP 3 %, 30 días), que es la que usa la demo |
+| T-037, T-047, T-069, T-074, T-081 | Pruebas de integración por fase (API + PostgreSQL real) | Solo existe el proyecto de pruebas de dominio. Falta crear el proyecto de integración (DT-06); el riesgo mayor, el motor de cálculo, ya está cubierto por T-050 |
+| T-059 | Repetir C-01 a C-19 como pruebas de integración de emisión | Depende del proyecto de pruebas de integración anterior |
+| T-082 a T-085 | Consulta de auditoría y dashboard (API e interfaz) | Prioridad I (F7); se pospuso por tiempo. Los eventos de auditoría ya se registran y el historial de cada cotización se ve en su detalle |
+| T-086 | Revisión de seguridad formal | Requiere el sistema completo (depende de T-085); se hicieron controles parciales: sin secretos en el repositorio, 403 por rol y errores sin detalles internos |
+| T-087 | Verificación de restricciones de la base de datos | Depende de las pruebas de integración (T-069) |
+| T-088 | Pruebas de rendimiento | Deben medirse sobre el entorno desplegado |
+| T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (T-085) |
+| T-091 | Despliegue en Ubuntu Server (DT-08 sin decidir) | No hubo servidor disponible en el plazo; el README documenta los requisitos ya resueltos en el código |
+| T-092 | Respaldo y restauración automáticos | Depende del despliegue |
+| T-093 | Regresión del flujo principal en el entorno desplegado | Depende del despliegue; el flujo se verificó en desarrollo |
+| T-094 | Corrección de defectos de F8 | Depende de T-086 a T-093 |
+| T-099 | Sincronización final de documentos | Parcial: Anexo A actualizado y esta sección agregada; falta revisar `spec.md` contra el código cuando se cierren las tareas anteriores |
+| T-100 | Ensayo de la demo sobre el entorno desplegado | Depende del despliegue; el guion se puede ensayar en desarrollo con los datos de demostración |
+
+---
+
 ## Anexo A. Registro de decisiones técnicas
 
 Decisiones de implementación que `spec.md` deja abiertas. Se cierran en T-003 y se registran aquí. Ninguna puede contradecir `spec.md` ni agregar alcance.
 
 | ID | Decisión | Opciones a evaluar | Criterio de elección | Elegida | Fecha |
 |---|---|---|---|---|---|
-| DT-01 | Organización de proyectos del backend | Un proyecto por capa (Dominio, Aplicación, Infraestructura, API) + pruebas; o un proyecto de API con carpetas por capa | Que el compilador impida que el dominio dependa de la infraestructura, sin multiplicar proyectos | — | — |
+| DT-01 | Organización de proyectos del backend | Un proyecto por capa (Dominio, Aplicación, Infraestructura, API) + pruebas; o un proyecto de API con carpetas por capa | Que el compilador impida que el dominio dependa de la infraestructura, sin multiplicar proyectos | Un proyecto por capa (Domain, Application, Infrastructure, Api) + `QuoteFlow.Domain.Tests` | 25/11/2026 |
 | DT-02 | Librería de componentes de interfaz y temas | Librería de componentes accesible con soporte de temas; o componentes propios sobre una base de estilos | Aspecto profesional, modo oscuro nativo, accesibilidad y bajo peso | Componentes propios con variables CSS (tokens y temas claro/oscuro); sin librería de UI. Control total del aspecto y cero dependencias | 24/11/2026 |
 | DT-03 | Gestión del estado de servidor en el frontend | Librería de caché de consultas; o capa propia | Caché, reintentos e invalidación sin código propio extenso | TanStack Query: caché, invalidación y reintentos estándar con poco código | 24/11/2026 |
 | DT-04 | Formularios y validación en el frontend | Librería de formularios con validación por esquema; o validación propia | Tipado estricto y mensajes junto al campo | React Hook Form + Zod: validación por esquema mientras se escribe, con tipos inferidos | 24/11/2026 |
-| DT-05 | Generación de PDF | Convertir la plantilla HTML con un navegador sin interfaz; o librería .NET de generación de PDF con plantilla propia | Que el PDF sea idéntico a la vista previa (RF-DOC-02), licencia compatible y tiempo menor a 3 s | — | — |
-| DT-06 | Herramientas de pruebas | Framework de pruebas .NET con servidor de pruebas de ASP.NET Core y PostgreSQL 18 real; framework de pruebas para Vite | Ejecución con un solo comando y compatibilidad con PostgreSQL real | — | — |
-| DT-07 | Ejecución del proceso de vencimiento | Servicio en segundo plano dentro del backend; o tarea programada del sistema operativo | Simplicidad, recuperación tras reinicio e idempotencia | — | — |
-| DT-08 | Publicación en Ubuntu Server | Servidor web como proxy inverso con HTTPS frente al backend y al frontend estático; o el backend sirviendo también el frontend | Simplicidad operativa, certificados HTTPS y CORS coherente | — | — |
+| DT-05 | Generación de PDF | Convertir la plantilla HTML con un navegador sin interfaz; o librería .NET de generación de PDF con plantilla propia | Que el PDF sea idéntico a la vista previa (RF-DOC-02), licencia compatible y tiempo menor a 3 s | QuestPDF (licencia Community) con la misma estructura que la vista previa HTML | 25/11/2026 |
+| DT-06 | Herramientas de pruebas | Framework de pruebas .NET con servidor de pruebas de ASP.NET Core y PostgreSQL 18 real; framework de pruebas para Vite | Ejecución con un solo comando y compatibilidad con PostgreSQL real | xUnit para .NET y Vitest para el frontend; el proyecto de integración con PostgreSQL real queda pendiente (sección 13) | 25/11/2026 |
+| DT-07 | Ejecución del proceso de vencimiento | Servicio en segundo plano dentro del backend; o tarea programada del sistema operativo | Simplicidad, recuperación tras reinicio e idempotencia | Servicio en segundo plano en el backend (`QuoteExpirationService`, cada hora, configurable) | 25/11/2026 |
+| DT-08 | Publicación en Ubuntu Server | Servidor web como proxy inverso con HTTPS frente al backend y al frontend estático; o el backend sirviendo también el frontend | Simplicidad operativa, certificados HTTPS y CORS coherente | Pendiente (sección 13) | — |
 
 ---
 
