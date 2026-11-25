@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using QuoteFlow.Application.Abstractions.Services;
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Infrastructure.Persistence;
+using QuoteFlow.Infrastructure.Persistence.Records;
 
 namespace QuoteFlow.Infrastructure.Auditing;
 
@@ -22,17 +23,7 @@ internal sealed class AuditEventReader(ApplicationDbContext dbContext) : IAuditE
             .ThenBy(e => e.Id)
             .ToListAsync(cancellationToken);
 
-        return events
-            .Select(e => new AuditEventRecord(
-                e.Id,
-                e.OccurredAt,
-                e.UserId,
-                e.UserName,
-                e.EventType,
-                Enum.Parse<AuditEntityType>(e.EntityType),
-                e.EntityId,
-                e.Detail))
-            .ToList();
+        return events.Select(ToRecord).ToList();
     }
 
     public async Task<IReadOnlyList<DateTimeOffset>> GetOccurrencesByUserAsync(
@@ -48,4 +39,36 @@ internal sealed class AuditEventReader(ApplicationDbContext dbContext) : IAuditE
             .Select(e => e.OccurredAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<AuditEventRecord>> GetRecentAsync(
+        Guid? userId,
+        int count,
+        CancellationToken cancellationToken = default)
+    {
+        var query = dbContext.AuditEvents.AsNoTracking();
+
+        if (userId is { } id)
+        {
+            query = query.Where(e => e.UserId == id);
+        }
+
+        var events = await query
+            .OrderByDescending(e => e.OccurredAt)
+            .ThenByDescending(e => e.Id)
+            .Take(count)
+            .ToListAsync(cancellationToken);
+
+        return events.Select(ToRecord).ToList();
+    }
+
+    private static AuditEventRecord ToRecord(AuditEvent e) =>
+        new(
+            e.Id,
+            e.OccurredAt,
+            e.UserId,
+            e.UserName,
+            e.EventType,
+            Enum.Parse<AuditEntityType>(e.EntityType),
+            e.EntityId,
+            e.Detail);
 }

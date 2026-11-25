@@ -5,14 +5,15 @@ import { CategoryFormPage } from './features/categories/CategoryFormPage'
 import { CustomerDetailPage } from './features/customers/CustomerDetailPage'
 import { CustomerFormPage } from './features/customers/CustomerFormPage'
 import { CustomersPage } from './features/customers/CustomersPage'
+import { DashboardPage } from './features/dashboard/DashboardPage'
 import { ProductFormPage } from './features/products/ProductFormPage'
 import { NewQuotePage } from './features/quotes/NewQuotePage'
 import { QuoteDetailPage } from './features/quotes/QuoteDetailPage'
 import { QuotesPage } from './features/quotes/QuotesPage'
 import { ProductsPage } from './features/products/ProductsPage'
+import { SettingsPage } from './features/settings/SettingsPage'
 import { AppLayout } from './layout/AppLayout'
 import { ChangePasswordPage } from './pages/ChangePasswordPage'
-import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { ForbiddenPage, NotFoundPage } from './pages/StatusPages'
 
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
-          { index: true, element: <HomePage /> },
+          { index: true, element: <DashboardPage /> },
           { path: 'forbidden', element: <ForbiddenPage /> },
           { path: 'products', element: <ProductsPage /> },
           { path: 'quotes', element: <QuotesPage /> },
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
               { path: 'products/new', element: <ProductFormPage /> },
               { path: 'products/:id/edit', element: <ProductFormPage /> },
               { path: 'customers/:id/edit', element: <CustomerFormPage /> },
+              { path: 'settings', element: <SettingsPage /> },
             ],
           },
           { path: '*', element: <NotFoundPage /> },

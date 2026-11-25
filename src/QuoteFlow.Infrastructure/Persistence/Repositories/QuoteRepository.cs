@@ -3,6 +3,8 @@ using QuoteFlow.Application.Abstractions.Persistence;
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Domain.Entities;
 using QuoteFlow.Domain.Enums;
+using QuoteFlow.Domain.Services;
+using QuoteFlow.Domain.ValueObjects;
 
 namespace QuoteFlow.Infrastructure.Persistence.Repositories;
 
@@ -71,4 +73,40 @@ internal sealed class QuoteRepository(ApplicationDbContext dbContext)
 
     public Task<int> CountByStatusAsync(QuoteStatus status, CancellationToken cancellationToken = default) =>
         Set.IgnoreAutoIncludes().CountAsync(q => q.Status == status, cancellationToken);
+
+    public async Task<IReadOnlyList<QuoteStatusTotals>> GetTotalsByStatusAsync(
+        CancellationToken cancellationToken = default)
+    {
+        // El total es un value object con conversión: la agregación se hace directamente en SQL.
+        var rows = await DbContext.Database
+            .SqlQuery<StatusTotalsRow>($"""
+                SELECT status AS "Status",
+                       COUNT(*)::int AS "Count",
+                       COUNT(number)::int AS "NumberedCount",
+                       COALESCE(SUM(total), 0) AS "Total"
+                FROM quotes
+                GROUP BY status
+                """)
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .Select(r => new QuoteStatusTotals(
+                Enum.Parse<QuoteStatus>(r.Status),
+                r.Count,
+                r.NumberedCount,
+                Money.Create(r.Total)))
+            .ToList();
+    }
+
+    /// <summary>Fila de la agregación por estado; las propiedades coinciden con los alias de la consulta.</summary>
+    private sealed class StatusTotalsRow
+    {
+        public string Status { get; init; } = string.Empty;
+
+        public int Count { get; init; }
+
+        public int NumberedCount { get; init; }
+
+        public decimal Total { get; init; }
+    }
 }

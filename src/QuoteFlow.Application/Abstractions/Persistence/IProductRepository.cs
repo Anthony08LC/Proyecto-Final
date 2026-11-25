@@ -35,6 +35,9 @@ public interface IProductRepository : IRepository<Product>
     Task<IReadOnlyDictionary<Guid, int>> CountByCategoryAsync(
         IEnumerable<Guid> categoryIds,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Cuenta los productos activos (dashboard: RF-DSH-01).</summary>
+    Task<int> CountActiveAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>Criterios de búsqueda de productos. Los valores nulos no filtran.</summary>

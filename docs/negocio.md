@@ -89,4 +89,4 @@ Borrador ──emitir──► Emitida ──► Aceptada
 
 ## 7. Estado de la versión 1.0.0
 
-El flujo de valor principal está construido: catálogo, clientes, cotizaciones con su ciclo de vida completo, motor de cálculo, documento HTML/PDF y asistente de redacción. Quedan pendientes, entre otros, las pantallas de usuarios, configuración y perfil, la consulta de auditoría, el dashboard y el despliegue en el servidor. La lista completa, con su motivo, está en la sección 13 de [plan.md](../plan.md).
+El flujo de valor principal está construido: catálogo, clientes, cotizaciones con su ciclo de vida completo, motor de cálculo, documento HTML/PDF, asistente de redacción, dashboard de inicio y pantalla de configuración. Quedan pendientes, entre otros, las pantallas de usuarios y perfil, la consulta de auditoría y el despliegue en el servidor. La lista completa, con su motivo, está en la sección 13 de [plan.md](../plan.md).

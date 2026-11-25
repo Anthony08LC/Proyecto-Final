@@ -23,4 +23,13 @@ public interface IAuditEventReader
         string eventType,
         DateTimeOffset since,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Últimos <paramref name="count"/> eventos, del más reciente al más antiguo; con
+    /// <paramref name="userId"/>, solo los de ese usuario (actividad reciente: RF-DSH-03).
+    /// </summary>
+    Task<IReadOnlyList<AuditEventRecord>> GetRecentAsync(
+        Guid? userId,
+        int count,
+        CancellationToken cancellationToken = default);
 }

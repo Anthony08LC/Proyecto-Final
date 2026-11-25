@@ -28,6 +28,9 @@ public interface ICustomerRepository : IRepository<Customer>
     Task<IReadOnlyList<Customer>> GetByIdsAsync(
         IEnumerable<Guid> ids,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Cuenta los clientes activos (dashboard: RF-DSH-01).</summary>
+    Task<int> CountActiveAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>Criterios de búsqueda de clientes. Los valores nulos no filtran.</summary>

@@ -940,14 +940,13 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 | T-016 | Integración continua | Prioridad D; se pospuso a favor del flujo principal según el punto de control de alcance |
 | T-031 | Pantalla de perfil | Prioridad I; la API de sesión existe, falta la interfaz. Se priorizaron las pantallas del flujo de cotización |
 | T-033 | Pantalla de gestión de usuarios | Prioridad I; la API (`UsersController`) está hecha. Hoy solo existe el Administrador inicial, creado por el seeding |
-| T-036 | Pantalla de configuración | La API (`SettingsController`) está hecha; falta la interfaz. Mientras tanto rige la configuración inicial (IVA 13 %, tramos 5 %/10 %, VIP 3 %, 30 días), que es la que usa la demo |
 | T-037, T-047, T-069, T-074, T-081 | Pruebas de integración por fase (API + PostgreSQL real) | Solo existe el proyecto de pruebas de dominio. Falta crear el proyecto de integración (DT-06); el riesgo mayor, el motor de cálculo, ya está cubierto por T-050 |
 | T-059 | Repetir C-01 a C-19 como pruebas de integración de emisión | Depende del proyecto de pruebas de integración anterior |
-| T-082 a T-085 | Consulta de auditoría y dashboard (API e interfaz) | Prioridad I (F7); se pospuso por tiempo. Los eventos de auditoría ya se registran y el historial de cada cotización se ve en su detalle |
-| T-086 | Revisión de seguridad formal | Requiere el sistema completo (depende de T-085); se hicieron controles parciales: sin secretos en el repositorio, 403 por rol y errores sin detalles internos |
+| T-082, T-083 | Consulta de auditoría (API e interfaz) | Prioridad I (F7); se pospuso por tiempo. Los eventos ya se registran, el historial de cada cotización se ve en su detalle y el dashboard muestra los últimos 10 (T-084, T-085) |
+| T-086 | Revisión de seguridad formal | Requiere el sistema completo; se hicieron controles parciales: sin secretos en el repositorio, 403 por rol y errores sin detalles internos |
 | T-087 | Verificación de restricciones de la base de datos | Depende de las pruebas de integración (T-069) |
 | T-088 | Pruebas de rendimiento | Deben medirse sobre el entorno desplegado |
-| T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (T-085) |
+| T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (faltan usuarios, perfil y auditoría) |
 | T-091 | Despliegue en Ubuntu Server (DT-08 sin decidir) | No hubo servidor disponible en el plazo; el README documenta los requisitos ya resueltos en el código |
 | T-092 | Respaldo y restauración automáticos | Depende del despliegue |
 | T-093 | Regresión del flujo principal en el entorno desplegado | Depende del despliegue; el flujo se verificó en desarrollo |

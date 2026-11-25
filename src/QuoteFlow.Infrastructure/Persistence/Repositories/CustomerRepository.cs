@@ -57,4 +57,7 @@ internal sealed class CustomerRepository(ApplicationDbContext dbContext)
         IEnumerable<Guid> ids,
         CancellationToken cancellationToken = default) =>
         FindByIdsAsync(ids, cancellationToken);
+
+    public Task<int> CountActiveAsync(CancellationToken cancellationToken = default) =>
+        Set.CountAsync(c => c.IsActive, cancellationToken);
 }

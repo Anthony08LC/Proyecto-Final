@@ -16,6 +16,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { to: '/customers', label: 'Clientes' },
   { to: '/products', label: 'Productos' },
   { to: '/categories', label: 'Categorías', adminOnly: true },
+  { to: '/settings', label: 'Configuración', adminOnly: true },
 ]
 
 const THEME_LABELS: Record<ThemePreference, string> = {

@@ -71,4 +71,7 @@ internal sealed class ProductRepository(ApplicationDbContext dbContext)
             .Select(g => new { CategoryId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.CategoryId, x => x.Count, cancellationToken);
     }
+
+    public Task<int> CountActiveAsync(CancellationToken cancellationToken = default) =>
+        Set.CountAsync(p => p.IsActive, cancellationToken);
 }

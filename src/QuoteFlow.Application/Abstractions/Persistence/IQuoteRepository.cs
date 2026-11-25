@@ -1,6 +1,7 @@
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Domain.Entities;
 using QuoteFlow.Domain.Enums;
+using QuoteFlow.Domain.Services;
 
 namespace QuoteFlow.Application.Abstractions.Persistence;
 
@@ -25,6 +26,12 @@ public interface IQuoteRepository : IRepository<Quote>
 
     /// <summary>Cuenta las cotizaciones en el estado indicado (por ejemplo, borradores: RF-CFG-03).</summary>
     Task<int> CountByStatusAsync(QuoteStatus status, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Cantidad, cantidad con número y suma de totales de las cotizaciones de cada estado, calculadas
+    /// en la base de datos (indicadores del dashboard: RF-DSH-01). Los estados sin cotizaciones no aparecen.
+    /// </summary>
+    Task<IReadOnlyList<QuoteStatusTotals>> GetTotalsByStatusAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
