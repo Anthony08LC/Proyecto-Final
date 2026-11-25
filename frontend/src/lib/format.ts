@@ -113,3 +113,14 @@ function costaRicaParts(value: string): DateParts | null {
     minute: parts['minute'] ?? '',
   }
 }
+
+const NORMALIZED_PHONE = /^\+506(\d{4})(\d{4})$/
+
+/** Teléfono normalizado por el backend (`+50688887777`) con formato legible: `+506 8888-7777`. */
+export function formatPhone(value: string | null | undefined): string {
+  if (!value) {
+    return '—'
+  }
+  const match = NORMALIZED_PHONE.exec(value)
+  return match ? `+506 ${match[1]}-${match[2]}` : value
+}

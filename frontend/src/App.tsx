@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import { RedirectIfAuthenticated, RequireAdministrator, RequireAuth } from './auth/guards'
 import { CategoriesPage } from './features/categories/CategoriesPage'
 import { CategoryFormPage } from './features/categories/CategoryFormPage'
+import { CustomerDetailPage } from './features/customers/CustomerDetailPage'
+import { CustomerFormPage } from './features/customers/CustomerFormPage'
+import { CustomersPage } from './features/customers/CustomersPage'
 import { ProductFormPage } from './features/products/ProductFormPage'
 import { ProductsPage } from './features/products/ProductsPage'
 import { AppLayout } from './layout/AppLayout'
@@ -29,6 +32,9 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: 'forbidden', element: <ForbiddenPage /> },
           { path: 'products', element: <ProductsPage /> },
+          { path: 'customers', element: <CustomersPage /> },
+          { path: 'customers/new', element: <CustomerFormPage /> },
+          { path: 'customers/:id', element: <CustomerDetailPage /> },
           {
             element: <RequireAdministrator />,
             children: [
@@ -37,6 +43,7 @@ const router = createBrowserRouter([
               { path: 'categories/:id/edit', element: <CategoryFormPage /> },
               { path: 'products/new', element: <ProductFormPage /> },
               { path: 'products/:id/edit', element: <ProductFormPage /> },
+              { path: 'customers/:id/edit', element: <CustomerFormPage /> },
             ],
           },
           { path: '*', element: <NotFoundPage /> },

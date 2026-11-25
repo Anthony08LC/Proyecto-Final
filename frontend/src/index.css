@@ -494,6 +494,11 @@ a {
   min-width: 170px;
 }
 
+.section-table {
+  margin-top: 14px;
+  box-shadow: none;
+}
+
 .table-wrapper {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

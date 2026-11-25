@@ -4,6 +4,7 @@ import {
   formatDate,
   formatDateTime,
   formatPercentage,
+  formatPhone,
   formatQuantity,
 } from './format'
 
@@ -78,5 +79,16 @@ describe('formatDateTime', () => {
   it('usa la hora de Costa Rica en formato de 24 horas', () => {
     expect(formatDateTime('2026-11-25T03:05:00Z')).toBe('24/11/2026 21:05')
     expect(formatDateTime('2026-11-24T18:00:00.1234567+00:00')).toBe('24/11/2026 12:00')
+  })
+})
+
+describe('formatPhone', () => {
+  it('da formato al teléfono normalizado', () => {
+    expect(formatPhone('+50688887777')).toBe('+506 8888-7777')
+  })
+
+  it('deja otros valores como están y usa un guion si no hay teléfono', () => {
+    expect(formatPhone('2222-3333')).toBe('2222-3333')
+    expect(formatPhone(null)).toBe('—')
   })
 })
