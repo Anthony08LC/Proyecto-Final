@@ -23,7 +23,7 @@ export function CategoriesPage() {
     entityLabel: 'la categoría',
     deactivate: deactivateCategory,
     reactivate: reactivateCategory,
-    invalidate: categoryKeys.all,
+    invalidate: [categoryKeys.all],
     deactivateConsequences: (
       <>
         <p>No se podrá asignar a productos nuevos ni editados.</p>

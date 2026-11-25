@@ -17,7 +17,7 @@ interface Options {
   deactivate: (id: string) => Promise<void>
   reactivate: (id: string) => Promise<void>
   /** Consultas que deben recargarse después del cambio. */
-  invalidate: QueryKey
+  invalidate: readonly QueryKey[]
   /** Consecuencias de desactivar, explicadas antes de confirmar (RNF-USA-06). */
   deactivateConsequences: ReactNode
   reactivateConsequences: ReactNode
@@ -42,7 +42,7 @@ export function useActivationDialog({
   const mutation = useMutation({
     mutationFn: (item: Activatable) => (item.isActive ? deactivate(item.id) : reactivate(item.id)),
     onSuccess: async (_, item) => {
-      await queryClient.invalidateQueries({ queryKey: invalidate })
+      await Promise.all(invalidate.map((queryKey) => queryClient.invalidateQueries({ queryKey })))
       notify(`Se ${item.isActive ? 'desactivó' : 'reactivó'} ${entityLabel} «${item.name}».`)
       setTarget(null)
     },
