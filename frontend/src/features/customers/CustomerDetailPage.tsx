@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { getErrorMessage } from '../../api/apiError'
 import {
   deactivateCustomer,
@@ -18,7 +18,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Pagination } from '../../components/ui/Pagination'
 import { useToast } from '../../components/ui/toastContext'
 import { formatCurrency, formatDate, formatDateTime, formatPhone } from '../../lib/format'
-import { QUOTE_STATUS_LABELS, QUOTE_STATUS_TONES } from '../../lib/quoteStatus'
+import { QUOTE_STATUS_LABELS, QUOTE_STATUS_TONES, quoteDisplayNumber } from '../../lib/quoteStatus'
 import { useListParams } from '../../lib/useListParams'
 import { customerKeys, useCustomer, useCustomerQuotes } from './queries'
 
@@ -131,7 +131,7 @@ function CustomerDetail({ customer }: { customer: Customer }) {
         </dl>
       </section>
 
-      <CustomerQuotes customerId={customer.id} />
+      <CustomerQuotes customerId={customer.id} isActive={customer.isActive} />
 
       {activation.dialog}
     </>
@@ -189,7 +189,7 @@ function VipAction({ customer }: { customer: Customer }) {
 const NO_FILTERS = [] as const
 
 /** Historial de cotizaciones del cliente: número, estado, total y fecha (RF-CLI-03). */
-function CustomerQuotes({ customerId }: { customerId: string }) {
+function CustomerQuotes({ customerId, isActive }: { customerId: string; isActive: boolean }) {
   const { page, setPage } = useListParams(NO_FILTERS)
   const { data, error, isPending, isPlaceholderData } = useCustomerQuotes(customerId, page)
 
@@ -199,6 +199,11 @@ function CustomerQuotes({ customerId }: { customerId: string }) {
         <h2 id="customer-quotes" className="card__title">
           Cotizaciones
         </h2>
+        {isActive && (
+          <ButtonLink to={`/quotes/new?customerId=${customerId}`} variant="primary">
+            Nueva cotización
+          </ButtonLink>
+        )}
       </div>
 
       {error && <Alert tone="danger">{getErrorMessage(error)}</Alert>}
@@ -227,7 +232,11 @@ function CustomerQuotes({ customerId }: { customerId: string }) {
                 <tbody>
                   {data.items.map((quote) => (
                     <tr key={quote.id}>
-                      <td className="table__primary">{quote.number ?? 'Borrador'}</td>
+                      <td>
+                        <Link className="table__primary" to={`/quotes/${quote.id}`}>
+                          {quoteDisplayNumber(quote.number)}
+                        </Link>
+                      </td>
                       <td>
                         <Badge tone={QUOTE_STATUS_TONES[quote.status]}>
                           {QUOTE_STATUS_LABELS[quote.status]}
