@@ -80,10 +80,10 @@ internal sealed class QuoteRepository(ApplicationDbContext dbContext)
         // El total es un value object con conversión: la agregación se hace directamente en SQL.
         var rows = await DbContext.Database
             .SqlQuery<StatusTotalsRow>($"""
-                SELECT status AS "Status",
-                       COUNT(*)::int AS "Count",
-                       COUNT(number)::int AS "NumberedCount",
-                       COALESCE(SUM(total), 0) AS "Total"
+                SELECT status AS status,
+                       COUNT(*)::int AS count,
+                       COUNT(number)::int AS numbered_count,
+                       COALESCE(SUM(total), 0) AS total
                 FROM quotes
                 GROUP BY status
                 """)
@@ -98,7 +98,7 @@ internal sealed class QuoteRepository(ApplicationDbContext dbContext)
             .ToList();
     }
 
-    /// <summary>Fila de la agregación por estado; las propiedades coinciden con los alias de la consulta.</summary>
+    /// <summary>Fila de la agregación por estado; los alias usan snake_case porque la convención de nombres también se aplica a SqlQuery.</summary>
     private sealed class StatusTotalsRow
     {
         public string Status { get; init; } = string.Empty;
