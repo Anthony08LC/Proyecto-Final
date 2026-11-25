@@ -1,17 +1,36 @@
-import { HealthStatusCard } from './features/health/HealthStatusCard'
+import { createBrowserRouter, RouterProvider } from 'react-router'
+import { RedirectIfAuthenticated, RequireAuth } from './auth/guards'
+import { AppLayout } from './layout/AppLayout'
+import { ChangePasswordPage } from './pages/ChangePasswordPage'
+import { HomePage } from './pages/HomePage'
+import { LoginPage } from './pages/LoginPage'
+import { ForbiddenPage, NotFoundPage } from './pages/StatusPages'
 
 /**
- * Pantalla provisional del incremento 1: muestra el estado del backend. El layout, las rutas y la
- * sesión llegan en los siguientes incrementos.
+ * Rutas (RF-AUT-04): todo exige sesión salvo el inicio de sesión; las de gestión exigen además el
+ * rol Administrador. La autoridad es siempre el backend.
  */
+const router = createBrowserRouter([
+  {
+    element: <RedirectIfAuthenticated />,
+    children: [{ path: '/login', element: <LoginPage /> }],
+  },
+  {
+    element: <RequireAuth />,
+    children: [
+      { path: '/change-password', element: <ChangePasswordPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'forbidden', element: <ForbiddenPage /> },
+          { path: '*', element: <NotFoundPage /> },
+        ],
+      },
+    ],
+  },
+])
+
 export function App() {
-  return (
-    <main className="page">
-      <header className="page__header">
-        <h1 className="page__title">QuoteFlow AI</h1>
-        <p className="muted">TechSolutions CR · Gestión de cotizaciones</p>
-      </header>
-      <HealthStatusCard />
-    </main>
-  )
+  return <RouterProvider router={router} />
 }
