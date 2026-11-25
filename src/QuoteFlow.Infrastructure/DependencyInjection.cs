@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using QuoteFlow.Application.Abstractions.Persistence;
 using QuoteFlow.Application.Abstractions.Services;
 using QuoteFlow.Infrastructure.Auditing;
+using QuoteFlow.Infrastructure.Documents;
 using QuoteFlow.Infrastructure.Persistence;
 using QuoteFlow.Infrastructure.Persistence.Repositories;
 using QuoteFlow.Infrastructure.Persistence.Seeding;
@@ -63,6 +64,9 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IAccessTokenGenerator, JwtAccessTokenGenerator>();
         services.AddOptions<JwtOptions>().Bind(configuration.GetSection(JwtOptions.SectionName));
+
+        // Documento comercial: vista previa HTML y PDF con QuestPDF (RF-DOC-01, RF-DOC-02).
+        services.AddSingleton<IQuoteDocumentRenderer, QuoteDocumentRenderer>();
 
         // Datos iniciales.
         services.AddOptions<SeedOptions>().Bind(configuration.GetSection(SeedOptions.SectionName));

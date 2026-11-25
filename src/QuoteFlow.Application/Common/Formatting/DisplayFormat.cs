@@ -22,6 +22,15 @@ internal static class DisplayFormat
     public static string Percent(decimal value) =>
         value.ToString("0.##", CostaRicaNumbers) + " %";
 
+    /// <summary>Cantidad con hasta 2 decimales: <c>2,25</c>, <c>3</c>.</summary>
+    public static string Quantity(decimal value) => value.ToString("#,##0.##", CostaRicaNumbers);
+
+    /// <summary>Teléfono normalizado (<c>+50688887777</c>) con formato legible: <c>+506 8888-7777</c>.</summary>
+    public static string Phone(string phone) =>
+        phone.Length == 12 && phone.StartsWith("+506", StringComparison.Ordinal)
+            ? $"+506 {phone[4..8]}-{phone[8..]}"
+            : phone;
+
     public static string Date(DateOnly date) =>
         date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 

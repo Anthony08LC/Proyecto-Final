@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using QuoteFlow.Api.Contracts;
 using QuoteFlow.Application.Abstractions.Messaging;
 using QuoteFlow.Application.Common.Models;
+using QuoteFlow.Application.Documents;
+using QuoteFlow.Application.Documents.Queries.GetQuotePdf;
+using QuoteFlow.Application.Documents.Queries.GetQuotePreview;
 using QuoteFlow.Application.Quotes.Commands.AcceptQuote;
 using QuoteFlow.Application.Quotes.Commands.AddQuoteLine;
 using QuoteFlow.Application.Quotes.Commands.CancelQuote;
@@ -45,6 +48,46 @@ public sealed class QuotesController : ApiControllerBase
         [FromServices] IQueryHandler<GetQuoteByIdQuery, QuoteDetailDto> handler,
         CancellationToken cancellationToken) =>
         Ok(await handler.HandleAsync(new GetQuoteByIdQuery(id), cancellationToken));
+
+    /// <summary>
+    /// Vista previa HTML del documento comercial, en cualquier estado (RF-DOC-01). Los borradores
+    /// llevan la marca de agua «BORRADOR – Sin validez comercial» (RN-36).
+    /// </summary>
+    [HttpGet("{id:guid}/preview")]
+    [Produces("text/html")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK, "text/html")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Preview(
+        Guid id,
+        [FromServices] IQueryHandler<GetQuotePreviewQuery, string> handler,
+        CancellationToken cancellationToken)
+    {
+        var html = await handler.HandleAsync(new GetQuotePreviewQuery(id), cancellationToken);
+
+        // Página generada con datos de usuarios: sin scripts ni recursos externos.
+        Response.Headers.ContentSecurityPolicy =
+            "default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'";
+        Response.Headers.XContentTypeOptions = "nosniff";
+
+        return Content(html, "text/html; charset=utf-8");
+    }
+
+    /// <summary>
+    /// PDF del documento comercial, solo para cotizaciones emitidas (RF-DOC-02, RN-36). Si ya no
+    /// está Emitida, el documento muestra su estado. Se descarga como <c>COT-AAAA-000001.pdf</c>.
+    /// </summary>
+    [HttpGet("{id:guid}/pdf")]
+    [Produces("application/pdf")]
+    [ProducesResponseType<FileContentResult>(StatusCodes.Status200OK, "application/pdf")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Pdf(
+        Guid id,
+        [FromServices] IQueryHandler<GetQuotePdfQuery, QuotePdfFile> handler,
+        CancellationToken cancellationToken)
+    {
+        var file = await handler.HandleAsync(new GetQuotePdfQuery(id), cancellationToken);
+        return File(file.Content, "application/pdf", file.FileName);
+    }
 
     /// <summary>Crea un borrador para un cliente activo (RF-COT-01).</summary>
     [HttpPost]
