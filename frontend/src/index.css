@@ -479,6 +479,132 @@ a {
   min-width: 280px;
 }
 
+/* ---------- Cotización: detalle y editor ---------- */
+
+.quote-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+.quote-layout__main {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-layout__main > .card + .card {
+  margin-top: 0;
+}
+
+.quote-layout__side {
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 16px;
+}
+
+.quote-layout__side > .card + .card {
+  margin-top: 0;
+}
+
+.breakdown__rows {
+  margin: 14px 0 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown__row dt {
+  color: var(--color-text-muted);
+}
+
+.breakdown__row dd {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.breakdown__row--minor {
+  font-size: 13px;
+  padding-left: 12px;
+}
+
+.breakdown__row--total {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.breakdown__row--total dt {
+  color: var(--color-text);
+}
+
+.breakdown[aria-busy='true'] .breakdown__rows {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.timeline {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0 0 0 16px;
+  border-left: 2px solid var(--color-border);
+  display: grid;
+  gap: 14px;
+}
+
+.timeline__item {
+  position: relative;
+}
+
+.timeline__item::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-surface);
+}
+
+.timeline__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timeline__title {
+  font-weight: 600;
+}
+
+.timeline__detail {
+  margin: 2px 0 0;
+}
+
+.timeline .muted {
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .quote-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-layout__side {
+    position: static;
+  }
+}
+
 /* ---------- Combobox ---------- */
 
 .combobox {

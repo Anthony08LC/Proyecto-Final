@@ -7,6 +7,7 @@ import { CustomerFormPage } from './features/customers/CustomerFormPage'
 import { CustomersPage } from './features/customers/CustomersPage'
 import { ProductFormPage } from './features/products/ProductFormPage'
 import { NewQuotePage } from './features/quotes/NewQuotePage'
+import { QuoteDetailPage } from './features/quotes/QuoteDetailPage'
 import { QuotesPage } from './features/quotes/QuotesPage'
 import { ProductsPage } from './features/products/ProductsPage'
 import { AppLayout } from './layout/AppLayout'
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
           { path: 'products', element: <ProductsPage /> },
           { path: 'quotes', element: <QuotesPage /> },
           { path: 'quotes/new', element: <NewQuotePage /> },
+          { path: 'quotes/:id', element: <QuoteDetailPage /> },
           { path: 'customers', element: <CustomersPage /> },
           { path: 'customers/new', element: <CustomerFormPage /> },
           { path: 'customers/:id', element: <CustomerDetailPage /> },
