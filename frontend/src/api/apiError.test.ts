@@ -41,6 +41,15 @@ describe('ApiError.fromResponse', () => {
     expect(error.message).toBe('Ocurrió un error inesperado. Intente de nuevo más tarde.')
   })
 
+  it('muestra el detalle de los errores del asistente de IA (502-504)', () => {
+    const error = ApiError.fromResponse(504, { detail: 'El asistente tardó demasiado.' })
+
+    expect(error.message).toBe('El asistente tardó demasiado.')
+    expect(ApiError.fromResponse(503, {}).message).toBe(
+      'Ocurrió un error inesperado. Intente de nuevo más tarde.',
+    )
+  })
+
   it('usa un mensaje por defecto cuando el cuerpo no es ProblemDetails', () => {
     expect(ApiError.fromResponse(404, 'Not Found').message).toBe('El recurso solicitado no existe.')
     expect(ApiError.fromResponse(409, undefined).message).toContain('Otro usuario modificó')

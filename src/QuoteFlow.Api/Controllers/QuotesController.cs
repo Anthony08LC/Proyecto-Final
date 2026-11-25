@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using QuoteFlow.Api.Contracts;
+using QuoteFlow.Application.Assistant.Commands.SuggestQuoteText;
 using QuoteFlow.Application.Abstractions.Messaging;
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Application.Documents;
@@ -164,6 +165,27 @@ public sealed class QuotesController : ApiControllerBase
             cancellationToken);
         return NoContent();
     }
+
+    /// <summary>
+    /// Sugerencia del asistente de IA para uno de los cuatro textos de un borrador (sección 11).
+    /// No modifica el borrador: para guardarla, se acepta con <c>PUT /texts</c>. Límite: 30 por hora
+    /// y por usuario (429 con <c>Retry-After</c>); 503 si Gemini no está configurado, 502 si falla
+    /// y 504 si excede el tiempo límite de 20 s.
+    /// </summary>
+    [HttpPost("{id:guid}/assistant")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status504GatewayTimeout)]
+    public async Task<ActionResult<QuoteTextSuggestionDto>> SuggestText(
+        Guid id,
+        SuggestQuoteTextRequest request,
+        [FromServices] ICommandHandler<SuggestQuoteTextCommand, QuoteTextSuggestionDto> handler,
+        CancellationToken cancellationToken) =>
+        Ok(await handler.HandleAsync(
+            new SuggestQuoteTextCommand(id, request.TextType, request.Action, request.CurrentText),
+            cancellationToken));
 
     /// <summary>
     /// Emite el borrador: asigna el número COT-AAAA-000001, la vigencia y congela los datos (RF-COT-07).

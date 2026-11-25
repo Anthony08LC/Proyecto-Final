@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using QuoteFlow.Application.Abstractions.Persistence;
 using QuoteFlow.Application.Abstractions.Services;
+using QuoteFlow.Infrastructure.Assistant;
 using QuoteFlow.Infrastructure.Auditing;
 using QuoteFlow.Infrastructure.Documents;
 using QuoteFlow.Infrastructure.Persistence;
@@ -68,12 +69,35 @@ public static class DependencyInjection
         // Documento comercial: vista previa HTML y PDF con QuestPDF (RF-DOC-01, RF-DOC-02).
         services.AddSingleton<IQuoteDocumentRenderer, QuoteDocumentRenderer>();
 
+        // Asistente de redacción con Gemini (sección 11): sin clave, la versión «no disponible» (RF-IA-03).
+        AddTextAssistant(services, configuration);
+
         // Datos iniciales.
         services.AddOptions<SeedOptions>().Bind(configuration.GetSection(SeedOptions.SectionName));
         services.AddScoped<DatabaseSeeder>();
         services.AddScoped<DemoDataSeeder>();
 
         return services;
+    }
+
+    private static void AddTextAssistant(IServiceCollection services, IConfiguration configuration)
+    {
+        var section = configuration.GetSection(GeminiOptions.SectionName);
+        services.AddOptions<GeminiOptions>().Bind(section);
+
+        var gemini = section.Get<GeminiOptions>() ?? new GeminiOptions();
+        if (!gemini.IsConfigured)
+        {
+            services.AddSingleton<ITextAssistant, UnavailableTextAssistant>();
+            return;
+        }
+
+        services.AddHttpClient<ITextAssistant, GeminiTextAssistant>(client =>
+        {
+            client.BaseAddress = new Uri(gemini.Endpoint.EndsWith('/') ? gemini.Endpoint : gemini.Endpoint + "/");
+            // El tiempo límite de 20 s lo aplica el asistente; este es solo un respaldo.
+            client.Timeout = gemini.Timeout + TimeSpan.FromSeconds(10);
+        });
     }
 
     /// <summary>

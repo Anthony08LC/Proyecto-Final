@@ -10,8 +10,9 @@
  * | 404    | Recurso inexistente                                    |
  * | 409    | Conflicto de concurrencia o de unicidad                |
  * | 422    | Regla de negocio incumplida (el `detail` explica la causa) |
- * | 429    | Demasiados intentos de inicio de sesión                |
+ * | 429    | Demasiados intentos de inicio de sesión o límite del asistente de IA |
  * | 500    | Error inesperado, con mensaje genérico                 |
+ * | 502-504 | Asistente de IA no configurado, con error o sin respuesta a tiempo (`detail` apto para mostrar) |
  */
 
 /** Cuerpo ProblemDetails tal como lo envía el backend. */
@@ -103,12 +104,14 @@ export function getErrorMessage(error: unknown): string {
 }
 
 function messageFor(status: number, problem: ProblemDetails | undefined): string {
+  const detail = problem?.detail?.trim()
+
   // Los 500 traen un mensaje genérico del backend; en los demás el detalle explica la causa.
+  // Los 502-504 del asistente de IA (sección 11.4) traen un detalle pensado para el usuario.
   if (status >= 500) {
-    return GENERIC_MESSAGE
+    return status >= 502 && status <= 504 && detail ? detail : GENERIC_MESSAGE
   }
 
-  const detail = problem?.detail?.trim()
   if (detail) {
     return detail
   }

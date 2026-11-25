@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { QUOTE_TEXT_MAX, updateQuoteTexts, type QuoteDetail } from '../../../api/quotes'
@@ -7,8 +7,11 @@ import { Button } from '../../../components/ui/Button'
 import { Alert } from '../../../components/ui/Feedback'
 import { TextAreaField } from '../../../components/ui/Field'
 import { useToast } from '../../../components/ui/toastContext'
+import { getErrorMessage } from '../../../api/apiError'
 import { applyServerErrors, emptyToNull, optionalText } from '../../../lib/forms'
-import { QUOTE_TEXT_FIELDS } from '../quoteTexts'
+import { useAssistantStatus } from '../queries'
+import { QUOTE_TEXT_FIELDS, type QuoteTextKey } from '../quoteTexts'
+import { AssistantFieldControls } from './AssistantFieldControls'
 import { useDraftChange } from './useDraftChange'
 
 const schema = z.object({
@@ -45,6 +48,47 @@ export function QuoteTextsForm({ quote, onDirtyChange }: QuoteTextsFormProps) {
     },
   })
   const { errors, isDirty } = form.formState
+  const values = form.watch()
+
+  // Asistente de IA (sección 11): solo en borradores que el usuario puede modificar.
+  const canUseAssistant = quote.actions.canUseAssistant
+  const assistantStatus = useAssistantStatus(canUseAssistant)
+  const assistantEnabled = canUseAssistant && assistantStatus.data?.isAvailable === true
+  const assistantDisabledReason = !canUseAssistant
+    ? 'El asistente solo está disponible en borradores que usted puede modificar.'
+    : assistantStatus.data && !assistantStatus.data.isAvailable
+      ? (assistantStatus.data.message ?? 'El asistente de redacción no está disponible.')
+      : assistantStatus.isError
+        ? 'No se pudo consultar la disponibilidad del asistente.'
+        : null
+
+  /**
+   * Guarda solo el texto aceptado: los demás campos se envían con su valor guardado, así sus
+   * cambios sin guardar siguen pendientes en el formulario.
+   */
+  const acceptSuggestion = useCallback(
+    async (key: QuoteTextKey, text: string): Promise<boolean> => {
+      setFormError(null)
+      const saved = {
+        introduction: quote.introduction,
+        executiveSummary: quote.executiveSummary,
+        notes: quote.notes,
+        commercialTerms: quote.commercialTerms,
+      }
+      try {
+        await change.mutateAsync(() =>
+          updateQuoteTexts(quote.id, { ...saved, [key]: emptyToNull(text) }),
+        )
+        form.resetField(key, { defaultValue: text })
+        notify('Sugerencia aceptada y guardada.')
+        return true
+      } catch (error) {
+        setFormError(getErrorMessage(error))
+        return false
+      }
+    },
+    [change, form, notify, quote],
+  )
 
   useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange])
 
@@ -77,16 +121,31 @@ export function QuoteTextsForm({ quote, onDirtyChange }: QuoteTextsFormProps) {
         {isDirty && <span className="muted">Cambios sin guardar</span>}
       </div>
       {formError && <Alert tone="danger">{formError}</Alert>}
+      {canUseAssistant && assistantDisabledReason && (
+        <Alert tone="info">{assistantDisabledReason} Puede escribir los textos manualmente.</Alert>
+      )}
       <form className="form texts-form" noValidate onSubmit={form.handleSubmit(save)}>
         {QUOTE_TEXT_FIELDS.map((field) => (
-          <TextAreaField
-            key={field.key}
-            label={field.label}
-            maxLength={QUOTE_TEXT_MAX}
-            error={errors[field.key]?.message}
-            hint={`Opcional. Máximo ${QUOTE_TEXT_MAX} caracteres.`}
-            {...form.register(field.key)}
-          />
+          <div key={field.key} className="texts-form__field">
+            <TextAreaField
+              label={field.label}
+              maxLength={QUOTE_TEXT_MAX}
+              error={errors[field.key]?.message}
+              hint={`Opcional. Máximo ${QUOTE_TEXT_MAX} caracteres.`}
+              {...form.register(field.key)}
+            />
+            {canUseAssistant && (
+              <AssistantFieldControls
+                quoteId={quote.id}
+                field={field.key}
+                label={field.label}
+                currentValue={values[field.key] ?? ''}
+                enabled={assistantEnabled}
+                disabledReason={assistantDisabledReason}
+                onAccept={(text) => acceptSuggestion(field.key, text)}
+              />
+            )}
+          </div>
         ))}
         <div className="form-actions">
           <Button onClick={() => form.reset()} disabled={!isDirty || change.isPending}>

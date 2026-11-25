@@ -26,6 +26,8 @@ public static class DependencyInjection
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<QuoteDraftCalculator>();
         services.AddScoped<Documents.QuoteDocumentBuilder>();
+        services.AddScoped<Assistant.AssistantContextBuilder>();
+        services.AddScoped<Assistant.AssistantUsageLimiter>();
 
         RegisterHandlers(services, typeof(DependencyInjection).Assembly);
         return services;

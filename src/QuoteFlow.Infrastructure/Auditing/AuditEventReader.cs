@@ -34,4 +34,18 @@ internal sealed class AuditEventReader(ApplicationDbContext dbContext) : IAuditE
                 e.Detail))
             .ToList();
     }
+
+    public async Task<IReadOnlyList<DateTimeOffset>> GetOccurrencesByUserAsync(
+        Guid userId,
+        string eventType,
+        DateTimeOffset since,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.AuditEvents
+            .AsNoTracking()
+            .Where(e => e.UserId == userId && e.OccurredAt >= since && e.EventType == eventType)
+            .OrderBy(e => e.OccurredAt)
+            .Select(e => e.OccurredAt)
+            .ToListAsync(cancellationToken);
+    }
 }

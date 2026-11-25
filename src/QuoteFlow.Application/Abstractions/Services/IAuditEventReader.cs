@@ -13,4 +13,14 @@ public interface IAuditEventReader
         AuditEntityType entityType,
         Guid entityId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Momentos, del más antiguo al más reciente, en que el usuario generó eventos del tipo indicado
+    /// desde <paramref name="since"/> (por ejemplo, el límite de uso del asistente: RNF-SEG-12).
+    /// </summary>
+    Task<IReadOnlyList<DateTimeOffset>> GetOccurrencesByUserAsync(
+        Guid userId,
+        string eventType,
+        DateTimeOffset since,
+        CancellationToken cancellationToken = default);
 }

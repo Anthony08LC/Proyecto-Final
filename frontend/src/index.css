@@ -1180,3 +1180,65 @@ a.table__primary:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* Asistente de redacción con IA (sección 11) */
+.texts-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assistant {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assistant__bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.assistant__trigger {
+  font-size: 13px;
+}
+
+.assistant__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border-strong);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+}
+
+.assistant__title {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.assistant__caption {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.assistant__original {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assistant__text {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.assistant__editor {
+  min-height: 120px;
+}

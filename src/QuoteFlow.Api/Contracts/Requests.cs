@@ -1,3 +1,4 @@
+using QuoteFlow.Application.Assistant;
 using QuoteFlow.Domain.Enums;
 
 namespace QuoteFlow.Api.Contracts;
@@ -44,6 +45,15 @@ public sealed record UpdateQuoteTextsRequest(
     string? ExecutiveSummary,
     string? Notes,
     string? CommercialTerms);
+
+/// <summary>
+/// Solicitud al asistente: texto (<c>Introduction</c>, <c>ExecutiveSummary</c>, <c>Notes</c>,
+/// <c>CommercialTerms</c>), acción (<c>Generate</c>, <c>Improve</c>) y, para mejorar, el texto en pantalla.
+/// </summary>
+public sealed record SuggestQuoteTextRequest(
+    AssistantTextType? TextType,
+    AssistantAction? Action,
+    string? CurrentText);
 
 /// <summary>Motivo de un cambio de estado: opcional al rechazar; obligatorio al cancelar una emitida.</summary>
 public sealed record ReasonRequest(string? Reason);

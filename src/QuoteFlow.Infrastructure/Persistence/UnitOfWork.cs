@@ -41,6 +41,8 @@ internal sealed class UnitOfWork(
         }
     }
 
+    public void DiscardChanges() => dbContext.ChangeTracker.Clear();
+
     public async Task<TResult> ExecuteInTransactionAsync<TResult>(
         Func<CancellationToken, Task<TResult>> operation,
         CancellationToken cancellationToken = default)

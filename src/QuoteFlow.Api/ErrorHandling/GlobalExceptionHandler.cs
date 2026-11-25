@@ -28,7 +28,7 @@ public sealed class GlobalExceptionHandler(
 
         var problem = CreateProblem(exception);
 
-        if (problem.Status >= StatusCodes.Status500InternalServerError)
+        if (problem.Status >= StatusCodes.Status500InternalServerError && exception is not AssistantUnavailableException)
         {
             logger.LogError(exception, "Error no controlado al procesar {Method} {Path}.",
                 httpContext.Request.Method, httpContext.Request.Path);
@@ -39,6 +39,13 @@ public sealed class GlobalExceptionHandler(
         }
 
         httpContext.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
+
+        if (exception is UsageLimitExceededException limit)
+        {
+            var seconds = Math.Max(1, (int)Math.Ceiling((limit.RetryAt - DateTimeOffset.UtcNow).TotalSeconds));
+            httpContext.Response.Headers.RetryAfter = seconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            problem.Extensions["retryAt"] = limit.RetryAt;
+        }
 
         return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
@@ -64,6 +71,19 @@ public sealed class GlobalExceptionHandler(
         NotFoundException => Problem(StatusCodes.Status404NotFound, "Recurso no encontrado", exception.Message),
         ConflictException => Problem(StatusCodes.Status409Conflict, "Conflicto", exception.Message),
         ForbiddenAccessException => Problem(StatusCodes.Status403Forbidden, "Acceso denegado", exception.Message),
+        UsageLimitExceededException => Problem(
+            StatusCodes.Status429TooManyRequests,
+            "Límite de uso alcanzado",
+            exception.Message),
+        AssistantUnavailableException assistant => Problem(
+            assistant.Failure switch
+            {
+                AssistantFailure.NotConfigured => StatusCodes.Status503ServiceUnavailable,
+                AssistantFailure.Timeout => StatusCodes.Status504GatewayTimeout,
+                _ => StatusCodes.Status502BadGateway
+            },
+            "Asistente no disponible",
+            exception.Message),
         AuthenticationFailedException => Problem(
             StatusCodes.Status401Unauthorized,
             "No autenticado",

@@ -10,4 +10,7 @@ internal static class QuoteAuditEvents
     public const string Rejected = "QuoteRejected";
     public const string Cancelled = "QuoteCancelled";
     public const string Expired = "QuoteExpired";
+
+    /// <summary>Sugerencia del asistente de IA generada; el detalle nunca incluye el texto (RNF-SEG-12).</summary>
+    public const string TextGenerated = "QuoteTextGenerated";
 }
