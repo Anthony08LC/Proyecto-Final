@@ -6,6 +6,7 @@ import { CustomerDetailPage } from './features/customers/CustomerDetailPage'
 import { CustomerFormPage } from './features/customers/CustomerFormPage'
 import { CustomersPage } from './features/customers/CustomersPage'
 import { ProductFormPage } from './features/products/ProductFormPage'
+import { QuotesPage } from './features/quotes/QuotesPage'
 import { ProductsPage } from './features/products/ProductsPage'
 import { AppLayout } from './layout/AppLayout'
 import { ChangePasswordPage } from './pages/ChangePasswordPage'
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: 'forbidden', element: <ForbiddenPage /> },
           { path: 'products', element: <ProductsPage /> },
+          { path: 'quotes', element: <QuotesPage /> },
           { path: 'customers', element: <CustomersPage /> },
           { path: 'customers/new', element: <CustomerFormPage /> },
           { path: 'customers/:id', element: <CustomerDetailPage /> },

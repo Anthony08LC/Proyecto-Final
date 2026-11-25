@@ -53,7 +53,22 @@ export function useListParams<K extends string>(keys: readonly K[]) {
     [setParams],
   )
 
-  return { values, page, setFilter, setPage }
+  /** Quita todos los filtros y vuelve a la página 1, en una sola navegación. */
+  const clearFilters = useCallback(() => {
+    setParams(
+      (current) => {
+        const next = new URLSearchParams(current)
+        for (const key of keys) {
+          next.delete(key)
+        }
+        next.delete('page')
+        return next
+      },
+      { replace: true },
+    )
+  }, [setParams, keys])
+
+  return { values, page, setFilter, setPage, clearFilters }
 }
 
 /** Filtro de tres estados de la API (`true`, `false` o sin filtro) a partir de la URL. */

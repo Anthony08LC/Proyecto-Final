@@ -12,6 +12,7 @@ interface NavItem {
 /** Navegación lateral: solo muestra las opciones del rol (RF-AUT-04). */
 const NAV_ITEMS: readonly NavItem[] = [
   { to: '/', label: 'Inicio' },
+  { to: '/quotes', label: 'Cotizaciones' },
   { to: '/customers', label: 'Clientes' },
   { to: '/products', label: 'Productos' },
   { to: '/categories', label: 'Categorías', adminOnly: true },

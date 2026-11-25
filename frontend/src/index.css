@@ -479,6 +479,78 @@ a {
   min-width: 280px;
 }
 
+/* ---------- Combobox ---------- */
+
+.combobox {
+  position: relative;
+}
+
+.combobox__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+
+.combobox__option {
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.combobox__option--active {
+  background: var(--color-info-bg);
+}
+
+.combobox__empty {
+  padding: 8px 10px;
+  color: var(--color-text-muted);
+}
+
+.combobox__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.combobox__item-title {
+  display: block;
+  font-weight: 500;
+}
+
+.combobox__item-meta {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 12.5px;
+}
+
+.toolbar .combobox {
+  min-width: 260px;
+}
+
+.toolbar__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.toolbar__date .input {
+  width: auto;
+}
+
 /* ---------- Filtros, tablas y paginación ---------- */
 
 .toolbar {

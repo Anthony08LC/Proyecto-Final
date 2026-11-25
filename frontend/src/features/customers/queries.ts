@@ -22,10 +22,12 @@ export function useCustomers(filters: CustomerFilters) {
   })
 }
 
+/** Detalle de un cliente; con `id` vacío no consulta nada. */
 export function useCustomer(id: string) {
   return useQuery({
     queryKey: customerKeys.detail(id),
     queryFn: ({ signal }) => getCustomer(id, signal),
+    enabled: id !== '',
   })
 }
 

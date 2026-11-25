@@ -1,5 +1,6 @@
 import { request } from './http'
-import type { PagedResult, QuoteStatus } from './types'
+import type { QuoteSummary } from './quotes'
+import type { PagedResult } from './types'
 
 /** Cliente en listados (`CustomerSummaryDto`). */
 export interface CustomerSummary {
@@ -27,23 +28,6 @@ export interface Customer extends CustomerSummary {
 export interface CustomerSaveResult {
   customerId: string
   possibleDuplicateEmail: boolean
-}
-
-/** Cotización en el historial del cliente (`QuoteSummaryDto`). */
-export interface CustomerQuote {
-  id: string
-  number: string | null
-  status: QuoteStatus
-  customerId: string
-  customerName: string
-  ownerId: string
-  ownerName: string
-  /** Total calculado por el backend; estimado mientras sea borrador. */
-  total: number
-  isEstimate: boolean
-  createdAt: string
-  issuedAt: string | null
-  validUntil: string | null
 }
 
 export interface CustomerFilters {
@@ -79,7 +63,7 @@ export function getCustomer(id: string, signal?: AbortSignal) {
 
 /** Cotizaciones del cliente, más recientes primero (RF-CLI-03). */
 export function getCustomerQuotes(id: string, page: number, signal?: AbortSignal) {
-  return request<PagedResult<CustomerQuote>>(`/api/customers/${id}/quotes`, {
+  return request<PagedResult<QuoteSummary>>(`/api/customers/${id}/quotes`, {
     query: { page },
     signal,
   })
