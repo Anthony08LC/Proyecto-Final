@@ -16,6 +16,8 @@ const NAV_ITEMS: readonly NavItem[] = [
   { to: '/customers', label: 'Clientes' },
   { to: '/products', label: 'Productos' },
   { to: '/categories', label: 'Categorías', adminOnly: true },
+  { to: '/users', label: 'Usuarios', adminOnly: true },
+  { to: '/audit', label: 'Auditoría', adminOnly: true },
   { to: '/settings', label: 'Configuración', adminOnly: true },
 ]
 

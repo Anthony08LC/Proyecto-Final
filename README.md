@@ -22,7 +22,7 @@ src/
   QuoteFlow.Infrastructure/  EF Core + PostgreSQL, JWT, Gemini, PDF (QuestPDF), seeding
   QuoteFlow.Api/             Controladores, errores (ProblemDetails), CORS, vencimiento automático
 tests/
-  QuoteFlow.Domain.Tests/    xUnit: casos críticos C-01 a C-19 del motor de cálculo
+  QuoteFlow.Domain.Tests/    xUnit: casos críticos C-01 a C-19 del motor de cálculo y regla RN-31
 frontend/                    React 19 + Vite + TypeScript, TanStack Query, React Hook Form + Zod
 ```
 

@@ -10,19 +10,12 @@ import { Button } from '../components/ui/Button'
 import { Alert } from '../components/ui/Feedback'
 import { TextField } from '../components/ui/Field'
 import { useToast } from '../components/ui/toastContext'
-import { applyServerErrors } from '../lib/forms'
-
-/** Política de contraseñas (RNF-SEG-03): mínimo 10 caracteres, con al menos una letra y un número. */
-const newPassword = z
-  .string()
-  .min(10, 'Debe tener al menos 10 caracteres.')
-  .regex(/\p{L}/u, 'Debe incluir al menos una letra.')
-  .regex(/\d/, 'Debe incluir al menos un número.')
+import { applyServerErrors, passwordPolicy } from '../lib/forms'
 
 const schema = z
   .object({
     currentPassword: z.string().min(1, 'La contraseña actual es obligatoria.'),
-    newPassword,
+    newPassword: passwordPolicy,
     confirmPassword: z.string().min(1, 'Confirme la nueva contraseña.'),
   })
   .refine((values) => values.newPassword !== values.currentPassword, {

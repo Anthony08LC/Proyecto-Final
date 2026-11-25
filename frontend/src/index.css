@@ -851,6 +851,11 @@ a {
   white-space: nowrap;
 }
 
+.table .nowrap {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .table .actions {
   text-align: right;
   white-space: nowrap;

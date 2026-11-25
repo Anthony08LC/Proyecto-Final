@@ -1,9 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
 import { getErrorMessage } from '../../api/apiError'
 import type { QuoteStatus } from '../../api/types'
-import { MAX_PAGE_SIZE } from '../../api/types'
-import { getUsers } from '../../api/users'
 import { useSession } from '../../auth/useSession'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { Alert, Badge, EmptyState, Spinner } from '../../components/ui/Feedback'
@@ -15,6 +12,7 @@ import { QUOTE_STATUS_LABELS, QUOTE_STATUS_TONES, quoteDisplayNumber } from '../
 import { useListParams } from '../../lib/useListParams'
 import { CustomerPicker } from '../customers/CustomerPicker'
 import { useCustomer } from '../customers/queries'
+import { useUserOptions } from '../users/queries'
 import { useQuotes } from './queries'
 
 const FILTER_KEYS = ['number', 'customer', 'status', 'owner', 'from', 'to'] as const
@@ -46,11 +44,7 @@ export function QuotesPage() {
   })
 
   // El filtro por cualquier ejecutivo necesita la lista de usuarios, que es solo del Administrador.
-  const owners = useQuery({
-    queryKey: ['users', 'list', { pageSize: MAX_PAGE_SIZE }],
-    queryFn: ({ signal }) => getUsers({ pageSize: MAX_PAGE_SIZE }, signal),
-    enabled: isAdministrator,
-  })
+  const owners = useUserOptions({ enabled: isAdministrator })
 
   const selectedCustomer = useCustomer(values.customer)
   const hasFilters = FILTER_KEYS.some((key) => values[key])

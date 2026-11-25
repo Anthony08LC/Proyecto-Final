@@ -32,4 +32,24 @@ public interface IAuditEventReader
         Guid? userId,
         int count,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Busca eventos con los criterios indicados, del más reciente al más antiguo y paginado
+    /// (consulta de auditoría: RF-AUD-02).
+    /// </summary>
+    Task<PagedResult<AuditEventRecord>> SearchAsync(
+        AuditEventSearchCriteria criteria,
+        PageRequest page,
+        CancellationToken cancellationToken = default);
 }
+
+/// <summary>
+/// Criterios de búsqueda de eventos. Los valores nulos no filtran. <c>OccurredFrom</c> es
+/// inclusivo y <c>OccurredBefore</c> exclusivo.
+/// </summary>
+public sealed record AuditEventSearchCriteria(
+    Guid? UserId,
+    string? EventType,
+    AuditEntityType? EntityType,
+    DateTimeOffset? OccurredFrom,
+    DateTimeOffset? OccurredBefore);

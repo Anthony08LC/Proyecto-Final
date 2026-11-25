@@ -3,6 +3,7 @@ using QuoteFlow.Application.Abstractions.Services;
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Infrastructure.Persistence;
 using QuoteFlow.Infrastructure.Persistence.Records;
+using QuoteFlow.Infrastructure.Persistence.Repositories;
 
 namespace QuoteFlow.Infrastructure.Auditing;
 
@@ -59,6 +60,51 @@ internal sealed class AuditEventReader(ApplicationDbContext dbContext) : IAuditE
             .ToListAsync(cancellationToken);
 
         return events.Select(ToRecord).ToList();
+    }
+
+    public async Task<PagedResult<AuditEventRecord>> SearchAsync(
+        AuditEventSearchCriteria criteria,
+        PageRequest page,
+        CancellationToken cancellationToken = default)
+    {
+        var query = dbContext.AuditEvents.AsNoTracking();
+
+        if (criteria.UserId is { } userId)
+        {
+            query = query.Where(e => e.UserId == userId);
+        }
+
+        if (criteria.EventType is { } eventType)
+        {
+            query = query.Where(e => e.EventType == eventType);
+        }
+
+        if (criteria.EntityType is { } entityType)
+        {
+            var type = entityType.ToString();
+            query = query.Where(e => e.EntityType == type);
+        }
+
+        if (criteria.OccurredFrom is { } from)
+        {
+            query = query.Where(e => e.OccurredAt >= from);
+        }
+
+        if (criteria.OccurredBefore is { } before)
+        {
+            query = query.Where(e => e.OccurredAt < before);
+        }
+
+        var result = await query
+            .OrderByDescending(e => e.OccurredAt)
+            .ThenByDescending(e => e.Id)
+            .ToPagedResultAsync(page, cancellationToken);
+
+        return new PagedResult<AuditEventRecord>(
+            result.Items.Select(ToRecord).ToList(),
+            result.Page,
+            result.PageSize,
+            result.TotalCount);
     }
 
     private static AuditEventRecord ToRecord(AuditEvent e) =>

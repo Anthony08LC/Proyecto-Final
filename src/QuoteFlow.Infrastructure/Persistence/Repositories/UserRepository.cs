@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using QuoteFlow.Application.Abstractions.Persistence;
 using QuoteFlow.Application.Common.Models;
 using QuoteFlow.Domain.Entities;
-using QuoteFlow.Domain.Enums;
+using QuoteFlow.Domain.Specifications;
 using QuoteFlow.Domain.ValueObjects;
 
 namespace QuoteFlow.Infrastructure.Persistence.Repositories;
@@ -22,9 +22,7 @@ internal sealed class UserRepository(ApplicationDbContext dbContext)
             cancellationToken);
 
     public Task<int> CountActiveAdministratorsAsync(CancellationToken cancellationToken = default) =>
-        Set.CountAsync(
-            u => u.Role == UserRole.Administrator && u.IsActive && !u.IsSystem,
-            cancellationToken);
+        Set.CountAsync(UserSpecifications.CountsAsActiveAdministrator, cancellationToken);
 
     public Task<PagedResult<User>> SearchAsync(
         UserSearchCriteria criteria,

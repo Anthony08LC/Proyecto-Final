@@ -924,11 +924,12 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 ### 13.1 Completado
 
 - **F0–F1:** documentos base, solución por capas, configuración y secretos por variables de entorno, errores (ProblemDetails) y logging, EF Core + PostgreSQL, reloj y zona horaria, frontend con cliente API y formatos regionales.
-- **F2:** usuarios, contraseñas, JWT con validación por solicitud, roles y propiedad, cambio obligatorio de contraseña, limitador de inicio de sesión, HTTPS y CORS, auditoría automática y concurrencia optimista; interfaz de inicio/cierre de sesión y cambio de contraseña. API de usuarios y de configuración.
+- **F2:** usuarios, contraseñas, JWT con validación por solicitud, roles y propiedad, cambio obligatorio de contraseña, limitador de inicio de sesión, HTTPS y CORS, auditoría automática y concurrencia optimista; interfaz de inicio/cierre de sesión y cambio de contraseña. Gestión de usuarios (API e interfaz, T-032 y T-033) y API de configuración. La regla del último Administrador (RN-31) excluye al usuario de sistema y tiene prueba de dominio.
 - **F3:** clientes, categorías y productos (API e interfaz).
 - **F4:** motor de cálculo con los 19 casos críticos (T-050), agregado Cotización, máquina de estados, consecutivo, emisión, aceptar/rechazar/cancelar, vencimiento automático, duplicación, consulta e interfaz completa (editor, acciones, detalle e historial, duplicación).
 - **F5:** documento comercial en HTML y PDF (QuestPDF) con su interfaz.
 - **F6:** asistente con Gemini (T-075 a T-080): contexto mínimo, filtro de datos sensibles, tiempo límite, límite por usuario y auditoría.
+- **F7:** consulta de auditoría con filtros y paginación, solo Administrador (T-082, T-083), dashboard e interfaz de configuración.
 - **F8:** datos de demostración solo para Development (T-090).
 - **F9:** `README.md`, `docs/negocio.md`, `docs/uso-ia.md` y `docs/demo.md` (T-095 a T-098).
 
@@ -939,14 +940,12 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 | T-008 | Usuarios de base de datos separados (migraciones vs. aplicación) con permisos mínimos | Solo aplica al servidor; se hará junto con el despliegue (T-091). En desarrollo se usa una sola cadena de conexión |
 | T-016 | Integración continua | Prioridad D; se pospuso a favor del flujo principal según el punto de control de alcance |
 | T-031 | Pantalla de perfil | Prioridad I; la API de sesión existe, falta la interfaz. Se priorizaron las pantallas del flujo de cotización |
-| T-033 | Pantalla de gestión de usuarios | Prioridad I; la API (`UsersController`) está hecha. Hoy solo existe el Administrador inicial, creado por el seeding |
 | T-037, T-047, T-069, T-074, T-081 | Pruebas de integración por fase (API + PostgreSQL real) | Solo existe el proyecto de pruebas de dominio. Falta crear el proyecto de integración (DT-06); el riesgo mayor, el motor de cálculo, ya está cubierto por T-050 |
 | T-059 | Repetir C-01 a C-19 como pruebas de integración de emisión | Depende del proyecto de pruebas de integración anterior |
-| T-082, T-083 | Consulta de auditoría (API e interfaz) | Prioridad I (F7); se pospuso por tiempo. Los eventos ya se registran, el historial de cada cotización se ve en su detalle y el dashboard muestra los últimos 10 (T-084, T-085) |
 | T-086 | Revisión de seguridad formal | Requiere el sistema completo; se hicieron controles parciales: sin secretos en el repositorio, 403 por rol y errores sin detalles internos |
 | T-087 | Verificación de restricciones de la base de datos | Depende de las pruebas de integración (T-069) |
 | T-088 | Pruebas de rendimiento | Deben medirse sobre el entorno desplegado |
-| T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (faltan usuarios, perfil y auditoría) |
+| T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (falta la de perfil) |
 | T-091 | Despliegue en Ubuntu Server (DT-08 sin decidir) | No hubo servidor disponible en el plazo; el README documenta los requisitos ya resueltos en el código |
 | T-092 | Respaldo y restauración automáticos | Depende del despliegue |
 | T-093 | Regresión del flujo principal en el entorno desplegado | Depende del despliegue; el flujo se verificó en desarrollo |

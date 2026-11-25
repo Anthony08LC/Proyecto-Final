@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { RedirectIfAuthenticated, RequireAdministrator, RequireAuth } from './auth/guards'
+import { AuditPage } from './features/audit/AuditPage'
 import { CategoriesPage } from './features/categories/CategoriesPage'
 import { CategoryFormPage } from './features/categories/CategoryFormPage'
 import { CustomerDetailPage } from './features/customers/CustomerDetailPage'
@@ -12,6 +13,8 @@ import { QuoteDetailPage } from './features/quotes/QuoteDetailPage'
 import { QuotesPage } from './features/quotes/QuotesPage'
 import { ProductsPage } from './features/products/ProductsPage'
 import { SettingsPage } from './features/settings/SettingsPage'
+import { UserFormPage } from './features/users/UserFormPage'
+import { UsersPage } from './features/users/UsersPage'
 import { AppLayout } from './layout/AppLayout'
 import { ChangePasswordPage } from './pages/ChangePasswordPage'
 import { LoginPage } from './pages/LoginPage'
@@ -51,6 +54,10 @@ const router = createBrowserRouter([
               { path: 'products/new', element: <ProductFormPage /> },
               { path: 'products/:id/edit', element: <ProductFormPage /> },
               { path: 'customers/:id/edit', element: <CustomerFormPage /> },
+              { path: 'users', element: <UsersPage /> },
+              { path: 'users/new', element: <UserFormPage /> },
+              { path: 'users/:id/edit', element: <UserFormPage /> },
+              { path: 'audit', element: <AuditPage /> },
               { path: 'settings', element: <SettingsPage /> },
             ],
           },

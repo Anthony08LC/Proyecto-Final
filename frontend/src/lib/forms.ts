@@ -51,6 +51,20 @@ export const optionalPhone = z
     message: 'El teléfono debe tener 8 dígitos, con el prefijo +506 opcional.',
   })
 
+/**
+ * Igual que `PasswordPolicy` del backend (RNF-SEG-03): de 10 a 128 caracteres, con al menos una
+ * letra y un número.
+ */
+export const PASSWORD_MIN_LENGTH = 10
+export const PASSWORD_MAX_LENGTH = 128
+
+export const passwordPolicy = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, `Debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`)
+  .max(PASSWORD_MAX_LENGTH, `No puede superar los ${PASSWORD_MAX_LENGTH} caracteres.`)
+  .regex(/\p{L}/u, 'Debe incluir al menos una letra.')
+  .regex(/\d/, 'Debe incluir al menos un número.')
+
 /** Convierte el texto vacío en `null` para enviarlo a la API. */
 export function emptyToNull(value: string): string | null {
   const trimmed = value.trim()
