@@ -128,6 +128,16 @@ a {
   font-size: 13px;
 }
 
+/* Texto solo para lectores de pantalla. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ---------- Layout ---------- */
 
 .shell {
@@ -377,6 +387,10 @@ a {
 .form {
   display: grid;
   gap: 16px;
+}
+
+.form-card {
+  max-width: 760px;
 }
 
 .form-grid {

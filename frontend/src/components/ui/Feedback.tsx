@@ -9,8 +9,19 @@ export function Badge({ tone = 'neutral', children }: { tone?: Tone; children: R
 }
 
 /** Insignia de estado activo/inactivo, común a usuarios, clientes, categorías y productos. */
-export function ActiveBadge({ isActive }: { isActive: boolean }) {
-  return <Badge tone={isActive ? 'success' : 'neutral'}>{isActive ? 'Activo' : 'Inactivo'}</Badge>
+export function ActiveBadge({
+  isActive,
+  feminine = false,
+}: {
+  isActive: boolean
+  feminine?: boolean
+}) {
+  const ending = feminine ? 'a' : 'o'
+  return (
+    <Badge tone={isActive ? 'success' : 'neutral'}>
+      {isActive ? `Activ${ending}` : `Inactiv${ending}`}
+    </Badge>
+  )
 }
 
 interface AlertProps {

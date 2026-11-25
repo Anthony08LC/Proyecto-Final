@@ -1,5 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { RedirectIfAuthenticated, RequireAuth } from './auth/guards'
+import { RedirectIfAuthenticated, RequireAdministrator, RequireAuth } from './auth/guards'
+import { CategoriesPage } from './features/categories/CategoriesPage'
+import { CategoryFormPage } from './features/categories/CategoryFormPage'
 import { AppLayout } from './layout/AppLayout'
 import { ChangePasswordPage } from './pages/ChangePasswordPage'
 import { HomePage } from './pages/HomePage'
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: 'forbidden', element: <ForbiddenPage /> },
+          {
+            element: <RequireAdministrator />,
+            children: [
+              { path: 'categories', element: <CategoriesPage /> },
+              { path: 'categories/new', element: <CategoryFormPage /> },
+              { path: 'categories/:id/edit', element: <CategoryFormPage /> },
+            ],
+          },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
