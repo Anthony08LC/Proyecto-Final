@@ -69,11 +69,9 @@ internal sealed class QuoteLineConfiguration : IEntityTypeConfiguration<QuoteLin
             .IsUnique()
             .HasDatabaseName("uq_quote_lines_quote_product");
 
-        // La especificación pide (quote_id, line_number) único con verificación diferida: EF Core no
-        // puede declararla, así que la migración debe crear esa restricción DEFERRABLE. Aquí queda
-        // como índice no único, porque la renumeración al quitar una línea viola temporalmente la unicidad.
-        builder.HasIndex(QuoteIdProperty, nameof(QuoteLine.LineNumber))
-            .HasDatabaseName("ix_quote_lines_quote_line_number");
+        // (quote_id, line_number) es único con verificación diferida al final de la transacción, porque
+        // renumerar al quitar una línea viola la unicidad temporalmente. EF Core no declara restricciones
+        // DEFERRABLE: se crea con SQL explícito en la migración (ver ManualSchemaObjects).
 
         builder.HasIndex(l => l.ProductId);
     }

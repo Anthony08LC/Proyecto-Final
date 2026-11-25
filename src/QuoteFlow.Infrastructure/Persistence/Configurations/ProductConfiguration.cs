@@ -31,10 +31,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasIndex(p => p.CategoryId);
 
-        // RN-30 exige unicidad sin distinguir mayúsculas: la aplicación la valida con lower(name)
-        // y la migración debe reemplazar este índice por uno único sobre lower(name).
-        builder.HasIndex(p => p.Name)
-            .IsUnique()
-            .HasDatabaseName("uq_products_name");
+        // Nombre único sin distinguir mayúsculas (RN-30): índice sobre lower(name), creado con SQL
+        // explícito en la migración (ver ManualSchemaObjects), porque EF Core no declara índices de expresión.
     }
 }

@@ -38,9 +38,7 @@ public static class DependencyInjection
                     $"Falta la cadena de conexión «{ConnectionStringName}» (variable de entorno ConnectionStrings__{ConnectionStringName}).");
             }
 
-            options
-                .UseNpgsql(connectionString)
-                .UseSnakeCaseNamingConvention();
+            options.UseQuoteFlowDatabase(connectionString);
         });
 
         // Persistencia.

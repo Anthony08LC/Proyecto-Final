@@ -20,10 +20,7 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(c => c.Description).HasMaxLength(Category.DescriptionMaxLength);
 
-        // RN-30 exige unicidad sin distinguir mayúsculas: la aplicación la valida con lower(name)
-        // y la migración debe reemplazar este índice por uno único sobre lower(name).
-        builder.HasIndex(c => c.Name)
-            .IsUnique()
-            .HasDatabaseName("uq_categories_name");
+        // Nombre único sin distinguir mayúsculas (RN-30): índice sobre lower(name), creado con SQL
+        // explícito en la migración (ver ManualSchemaObjects), porque EF Core no declara índices de expresión.
     }
 }
