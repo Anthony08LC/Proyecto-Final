@@ -100,3 +100,68 @@ Claude Code (Anthropic) se usó como **asistente de programación** dentro de VS
 - **Sin secretos en el contexto:** las claves y contraseñas se manejan con variables de entorno y *user-secrets*; el repositorio solo contiene valores vacíos y plantillas.
 - **Configuración personal fuera del repositorio:** `.claude/settings.local.json` está en `.gitignore`.
 - **Lo pendiente está declarado:** lo que no se llegó a construir o verificar está listado en la sección 13 de `plan.md`, sin presentarlo como terminado.
+
+---
+
+## Parte C · Ciclos de trabajo con el agente (evidencia)
+
+Cada ciclo sigue el mismo formato que pide la consigna: **tarea → prompt → resultado del agente → revisión humana → corrección → commit**. Los hashes corresponden al historial de `main`.
+
+### Ciclo 1 · Análisis de reglas antes de construir (spec.md)
+
+| Paso | Detalle |
+|---|---|
+| Tarea | Validar el contexto del proyecto antes del diseño de dominio |
+| Prompt (extracto) | *"Analiza todo el contexto disponible… identificar posibles problemas, omisiones, riesgos, contradicciones o mejoras antes de iniciar el desarrollo."* |
+| Resultado del agente | Detectó que RN-01 a RN-04 admitían tres interpretaciones (tramos excluyentes, acumulados o compuestos) con **₡31.188 de diferencia** en una misma cotización de ₡1.200.000 VIP, y que el tope de 15 % (RN-04) nunca se activaría con la lectura más natural |
+| Revisión humana | El autor decidió: tramos **no acumulativos**, VIP suma 3 puntos, descuento máximo 13 % y **derogar RN-04**; además, renombrar "Aprobada" a "Aceptada" |
+| Corrección | Catálogo de reglas reescrito en `spec.md` (sección 7) y casos C-01 a C-19 calculados a mano en `plan.md` (sección 9.4) |
+| Evidencia | `spec.md` v1.0; pruebas `cba8ed13` (`test(motor): cubrir los casos críticos C-01 a C-19`) |
+
+### Ciclo 2 · Error al arrancar la API: `ck_system_settings_singleton`
+
+| Paso | Detalle |
+|---|---|
+| Tarea | T-018 / T-034: datos iniciales al conectar la API con la base en la VM |
+| Prompt (extracto) | El autor pegó el log del arranque: *"new row for relation system_settings violates check constraint ck_system_settings_singleton"* |
+| Resultado del agente | Leyó la entidad, su configuración de EF Core y el seeder. Diagnóstico: la columna sombra `singleton` tiene valor por defecto `true` en la base, pero EF Core insertaba `false` |
+| Revisión humana | El autor volvió a ejecutar la API y verificó en `psql` que existieran los 2 usuarios, las 4 categorías y la configuración con IVA 13 %, ₡500.000, ₡1.000.000 y 30 días |
+| Corrección | Una línea en `DatabaseSeeder` que asigna `Singleton = true` explícitamente, sin cambiar la migración |
+| Commit | `4c02b71d` · `fix(db): asignar singleton al crear la configuración inicial` |
+
+### Ciclo 3 · Las pruebas de integración borraron la base de pruebas
+
+| Paso | Detalle |
+|---|---|
+| Tarea | T-037 / T-059: pruebas de integración de seguridad y emisión |
+| Prompt (extracto) | *"Crea tests/QuoteFlow.Api.Tests con WebApplicationFactory contra la base de ConnectionStrings__QuoteFlowTests… login correcto e incorrecto, 401, 403, emisión con número consecutivo y congelamiento ante un cambio de precio."* |
+| Resultado del agente | La primera versión usaba `EnsureDeletedAsync()`: eliminó `quoteflow_tests`, pero el usuario `quoteflow_owner` no tiene permiso `CREATEDB` para recrearla. El propio agente lo reportó |
+| Revisión humana | El autor comprobó con `psql` que la base había desaparecido, la recreó con el superusuario y **verificó que la base principal `quoteflow` seguía intacta** |
+| Corrección | La fábrica ya no borra la base: vacía el esquema `public` y aplica las migraciones; antes de limpiar verifica servidor, puerto y nombre de la base de pruebas |
+| Commit | `c39146b7` · `test(api): pruebas de integración de seguridad y emisión (T-037, T-059)` |
+
+### Ciclo 4 · Búsqueda de productos que perdía los espacios
+
+| Paso | Detalle |
+|---|---|
+| Tarea | T-046: catálogo de productos en la interfaz |
+| Resultado del agente | La búsqueda recortaba el texto mientras se escribía, así que no se podían buscar nombres de varias palabras |
+| Revisión humana | Detectado por el autor al probar la pantalla en el navegador |
+| Corrección | Conservar el texto tal como se escribe y recortarlo solo al consultar |
+| Commit | `62697b71` · `fix(productos): conservar los espacios de la búsqueda mientras se escribe (T-046)` |
+
+### Ciclo 5 · Infraestructura: la API no llegaba a PostgreSQL
+
+| Paso | Detalle |
+|---|---|
+| Tarea | Conectar el backend con la VM de PostgreSQL 18 |
+| Resultado del agente | Guió el diagnóstico por capas: servicio, `listen_addresses`, firewall y, con `tcpdump`, comprobó que los paquetes nunca llegaban a la VM |
+| Revisión humana | El autor comparó la MAC de la VM con la de `arp -a` y confirmó un **conflicto de IP**: otro equipo usaba `192.168.0.20` |
+| Corrección | IP fija `192.168.0.50` con netplan; usuario propietario `quoteflow_owner` para migrar y `quoteflow_app` con permisos mínimos (sin `DELETE` salvo en `quote_lines`; auditoría solo `INSERT` y `SELECT`) |
+| Evidencia | Configuración en el servidor; permisos verificados con `\dp audit_events` |
+
+### Lecciones de la revisión humana
+
+- El agente propuso cadenas de conexión con `localhost` cuando la base estaba en la VM: **toda sugerencia de configuración se verificó** contra el entorno real.
+- Las respuestas del agente se trataron como **hipótesis**; la evidencia de que algo funciona viene de las pruebas, de `psql` y de la ejecución en el navegador.
+- Los secretos nunca se pusieron en prompts ni en archivos versionados. Cuando una clave quedó visible en una captura, se marcó para rotarla después de la entrega.

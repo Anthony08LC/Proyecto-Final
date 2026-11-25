@@ -30,6 +30,14 @@ QuoteFlow AI centraliza ese proceso en una plataforma única que:
 
 ## 2. Problema actual
 
+> **Empresa simulada.** TechSolutions CR es una empresa ficticia creada para este proyecto académico. El problema describe una situación típica de empresas costarricenses de tecnología que cotizan con hojas de cálculo.
+>
+> | Tipo de información | Ejemplos en este documento |
+> |---|---|
+> | **Observación** (práctica común del sector) | Cotizar con hojas de cálculo y documentos sueltos; copiar fórmulas; precios en archivos distintos |
+> | **Supuesto** (por verificar con una prueba de tareas) | Línea base de 15 minutos por cotización típica; 120 cotizaciones al mes; costo de ₡4.000 por hora de un ejecutivo |
+> | **Dato simulado** | Clientes, productos, precios y cotizaciones de los datos de demostración |
+
 Hoy, TechSolutions CR elabora sus cotizaciones de forma manual, con hojas de cálculo y documentos independientes. Este proceso tiene cinco problemas de fondo.
 
 ### 2.1 Dependencia de hojas de cálculo

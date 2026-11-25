@@ -2,6 +2,24 @@
 
 Plataforma de cotizaciones comerciales para **TechSolutions CR**: catálogo de productos, clientes (incluida la condición VIP), cotizaciones con ciclo de vida completo, motor de cálculo automático (descuentos por tramo, descuento VIP e IVA), documento comercial en HTML y PDF, y un asistente de redacción con Google Gemini que **nunca** interviene en los montos.
 
+## Autoría y contexto académico
+
+| | |
+|---|---|
+| Autor | Anthony Lizano Chaves |
+| Curso | SINT-732 · Laboratorio Ejecutivo en Claude Code · Universidad CENFOTEC |
+| Docente | Msc. Jorge Bermúdez-Tellería |
+| Agente de programación | **Claude Code** (Anthropic) en VS Code, para código, pruebas y documentación; **Claude** (claude.ai) para el análisis, la especificación, el plan y el diagnóstico de incidentes. Ver [docs/uso-ia.md](docs/uso-ia.md) |
+| Empresa | **TechSolutions CR es una empresa simulada.** Todos los datos de clientes, productos y cotizaciones son sintéticos |
+| Versión entregada | Etiqueta `v1.0.0` |
+
+## Problema y propuesta
+
+- **Problema:** el equipo de ventas cotiza con hojas de cálculo: pierde tiempo, comete errores de cálculo, aplica descuentos de forma inconsistente y no tiene trazabilidad.
+- **Usuario beneficiado:** ejecutivos de ventas y el Administrador comercial.
+- **Propuesta:** un flujo único **catálogo → cliente → cotización → cálculo automático → emisión → PDF**, con reglas de negocio verificables, cotizaciones inmutables después de emitidas y auditoría.
+- **Indicador:** tiempo por cotización típica, de una línea base supuesta de 15 minutos a 5 minutos o menos; 0 errores de cálculo. Medición y supuestos en [docs/negocio.md](docs/negocio.md).
+
 | Documento | Contenido |
 |---|---|
 | [intent.md](intent.md) | Por qué existe el producto |
@@ -109,8 +127,17 @@ Abra `http://localhost:5173` e inicie sesión con `Seed__AdminEmail` / `Seed__Ad
 ## Pruebas y calidad
 
 ```powershell
-# Backend: motor de cálculo (19 casos críticos)
+# Backend completo: motor de cálculo (19 casos críticos C-01 a C-19), RN-31
+# y pruebas de integración de la API (seguridad y emisión)
 dotnet test
+
+# Solo el motor de cálculo (no requiere base de datos)
+dotnet test tests/QuoteFlow.Domain.Tests
+
+# Solo integración: requiere una base PostgreSQL EXCLUSIVA para pruebas,
+# porque las pruebas vacían su esquema en cada ejecución
+#   ConnectionStrings__QuoteFlowTests = Host=...;Database=quoteflow_tests;Username=<dueño de la base>;Password=...
+dotnet test tests/QuoteFlow.Api.Tests
 
 # Frontend
 cd frontend
@@ -123,28 +150,19 @@ npm run build         # compilación de producción
 
 ## Producción
 
-El despliegue en Ubuntu Server (proxy inverso con HTTPS, servicio del backend y frontend estático) **aún no está hecho**; los respaldos sí (ver más abajo); ver la sección 13 de [plan.md](plan.md). Requisitos ya resueltos en el código para ese entorno:
+El despliegue en Ubuntu Server (proxy inverso con HTTPS, servicio del backend, frontend estático y respaldos) **aún no está hecho**; ver la sección 13 de [plan.md](plan.md). Requisitos ya resueltos en el código para ese entorno:
 
 - Fuera de Development la API fuerza HTTPS (HSTS y redirección) y no expone Swagger.
 - Los datos de demostración nunca se cargan fuera de Development: el seeder lo verifica y se niega.
 - Configure `Cors__AllowedOrigins__0` con el origen real del frontend y compile el frontend con `VITE_API_URL` apuntando a la API pública (`npm run build` genera `frontend/dist`).
 - El PDF usa QuestPDF con licencia Community; revise que sus condiciones apliquen a la organización.
 
-### Respaldo y restauración
+## Guía breve de demo
 
-Los scripts de [scripts/backup/](scripts/backup/) cubren el respaldo diario automático de la base `quoteflow` (RNF-DIS-03) en el servidor Ubuntu con PostgreSQL 18:
+1. Iniciar sesión como Administrador y mostrar el catálogo y un cliente VIP.
+2. Crear un borrador para el cliente VIP con un producto de ₡1.200.000 y verificar a mano el total **₡1.179.720,00** (13 % de descuento antes del IVA).
+3. Generar la introducción con el asistente, aceptarla y **emitir**: aparece el consecutivo `COT-AAAA-NNNNNN` y la cotización queda bloqueada.
+4. Ver la vista previa y descargar el PDF; registrar la aceptación y duplicar.
+5. Caso de error: cantidad 0 o emitir sin líneas → mensaje controlado. Ejecutar `dotnet test`.
 
-| Archivo | Qué hace |
-|---|---|
-| `backup.sh` | `pg_dump -Fc` a `/var/backups/quoteflow/quoteflow_AAAA-MM-DD.dump`, retención de 7 días y registro en `/var/backups/quoteflow/backup.log`. Se ejecuta como `postgres` por el socket local (autenticación peer), sin contraseñas |
-| `install.sh` | Crea la carpeta con dueño `postgres`, instala el script en `/usr/local/bin/quoteflow-backup.sh`, programa el cron diario a las 2:00 (`/etc/cron.d/quoteflow-backup`), hace un respaldo de prueba y lo restaura en una base temporal que compara con la original y luego elimina |
-| `restore.md` | Procedimiento de restauración paso a paso |
-
-Instalación desde Windows (reemplace `<usuario>` por un usuario con `sudo` en el servidor):
-
-```powershell
-scp -r scripts/backup <usuario>@192.168.0.50:/tmp/quoteflow-backup
-ssh -t <usuario>@192.168.0.50 "sudo bash /tmp/quoteflow-backup/install.sh"
-```
-
-Para restaurar, siga [scripts/backup/restore.md](scripts/backup/restore.md).
+Guion completo, datos y contingencia: [docs/demo.md](docs/demo.md).

@@ -19,6 +19,18 @@ Duración estimada: **12 a 15 minutos**. Recorre el flujo de valor principal: ca
 | Cliente no VIP | Andrea Castro Quesada — Constructora Horizonte |
 | Producto del caso de referencia | Servidor de archivos con respaldo — ₡1.200.000,00 (Solución empresarial) |
 
+## Agenda según la consigna del curso
+
+| Tiempo | Secciones de este guion |
+|---|---|
+| 0-2 min | 1 · Contexto y caso de negocio |
+| 2-8 min | 2 a 7 · Flujo completo en vivo y persistencia |
+| 8-10 min | 8 · Caso de error, comprobación ejecutable y corrección con el agente |
+| 10-12 min | 9 y 10 · Documentos, evidencia de IA, indicador, costos, adopción y cierre |
+| 12-15 min | Preguntas |
+
+> No se usan diapositivas: la aplicación y el repositorio quedan abiertos durante toda la demo.
+
 ## 1. Contexto (1 min)
 
 > "Hoy TechSolutions CR cotiza con hojas de cálculo: precios desactualizados, fórmulas copiadas, descuentos según quién cotice y sin historial. QuoteFlow centraliza todo y el ejecutivo ya no calcula nada a mano."
@@ -69,7 +81,30 @@ Si se quiere mostrar sin crear nada, la cotización **emitida** de Laura Jiméne
 2. En la cotización recién emitida, registrar **Aceptada**.
 3. **Duplicar** una cotización emitida: se crea un borrador nuevo con datos vigentes, sin tocar el original.
 
-## 8. Cierre (1 min)
+## 8. Caso de error y comprobación ejecutable (8-10 min)
+
+| Entrada | Resultado esperado |
+|---|---|
+| Cantidad **0** o **negativa** en una línea | El campo muestra el error y la API responde 400; la línea no se guarda (RN-07) |
+| **Emitir** un borrador **sin líneas** | Se rechaza con el mensaje de la causa (RN-09) |
+| Usuario de Ventas que intenta editar un producto | 403; la opción no aparece en su menú (RF-AUT-04) |
+| Cambiar el precio de un producto después de emitir | La cotización emitida **no cambia**; un borrador nuevo sí usa el precio nuevo (RN-12) |
+
+Comprobación automatizada en la terminal:
+
+```powershell
+dotnet test
+```
+
+Muestra los 19 casos del motor (C-01 a C-19) y las pruebas de integración. Luego explica una corrección hecha con el agente: el **ciclo 2** de [uso-ia.md](uso-ia.md), el error `ck_system_settings_singleton` y el commit `4c02b71d`.
+
+## 9. Documentos y evidencia (10-12 min)
+
+1. Abrir `intent.md` (problema, usuario e indicador), `spec.md` (RF, RN y modelo) y `plan.md` (estado real y trazabilidad, sección 13).
+2. Abrir `docs/uso-ia.md`, Parte C: un ciclo con su commit.
+3. Cerrar con `docs/negocio.md`: indicador de 15 a 5 minutos (supuesto), 20 h al mes liberadas (estimación), costos, limitaciones y los tres pasos de adopción.
+
+## 10. Cierre (1 min)
 
 > "Cinco minutos por cotización, cero errores de cálculo, una sola política comercial, documentos profesionales y todo queda registrado."
 

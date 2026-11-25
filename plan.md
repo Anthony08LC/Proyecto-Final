@@ -573,7 +573,7 @@ Las fases son secuenciales. Dentro de una fase, las tareas pueden ejecutarse en 
 - **Descripción:** PostgreSQL 18, usuarios de base de datos, aplicación de migraciones, servicio del backend, publicación del frontend, HTTPS y variables de entorno, según DT-08.
 - **Criterios:** el sistema funciona por HTTPS en el servidor; el primer arranque crea los datos iniciales; el procedimiento está documentado en el README.
 
-**T-092 · Respaldo y restauración** · E · Depende de: T-091 · RNF-DIS-03 · ✅ Completada (`scripts/backup/`)
+**T-092 · Respaldo y restauración** · E · Depende de: T-091 · RNF-DIS-03
 - **Descripción:** respaldo diario automático con retención y procedimiento de restauración.
 - **Criterios:** existe al menos un respaldo automático; una restauración en una base de pruebas funciona; el procedimiento está documentado.
 
@@ -930,7 +930,7 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 - **F5:** documento comercial en HTML y PDF (QuestPDF) con su interfaz.
 - **F6:** asistente con Gemini (T-075 a T-080): contexto mínimo, filtro de datos sensibles, tiempo límite, límite por usuario y auditoría.
 - **F7:** consulta de auditoría con filtros y paginación, solo Administrador (T-082, T-083), dashboard e interfaz de configuración.
-- **F8:** datos de demostración solo para Development (T-090). Respaldo y restauración (T-092): `scripts/backup/` con respaldo diario a las 2:00 por cron, retención de 7 días, registro y prueba de restauración automática en `install.sh`; procedimiento en `scripts/backup/restore.md`.
+- **F8:** datos de demostración solo para Development (T-090).
 - **F9:** `README.md`, `docs/negocio.md`, `docs/uso-ia.md` y `docs/demo.md` (T-095 a T-098).
 
 ### 13.2 Pendiente
@@ -947,10 +947,41 @@ Corte al 25 de noviembre de 2026. Se aplicó el punto de control de alcance de l
 | T-088 | Pruebas de rendimiento | Deben medirse sobre el entorno desplegado |
 | T-089 | Revisión de experiencia de usuario | Depende de que existan todas las pantallas (falta la de perfil) |
 | T-091 | Despliegue en Ubuntu Server (DT-08 sin decidir) | No hubo servidor disponible en el plazo; el README documenta los requisitos ya resueltos en el código |
+| T-092 | Respaldo y restauración automáticos | Depende del despliegue |
 | T-093 | Regresión del flujo principal en el entorno desplegado | Depende del despliegue; el flujo se verificó en desarrollo |
 | T-094 | Corrección de defectos de F8 | Depende de T-086 a T-093 |
 | T-099 | Sincronización final de documentos | Parcial: Anexo A actualizado y esta sección agregada; falta revisar `spec.md` contra el código cuando se cierren las tareas anteriores |
 | T-100 | Ensayo de la demo sobre el entorno desplegado | Depende del despliegue; el guion se puede ensayar en desarrollo con los datos de demostración |
+
+---
+
+### 13.3 Trazabilidad con evidencia
+
+Requisito → tareas → comprobación → commit. Los hashes son de `main`.
+
+| Requisito | Tareas | Comprobación | Commits |
+|---|---|---|---|
+| RF-AUT-01 a 07 (sesión, roles, contraseña) | T-023 a T-030 | `AuthTests`: login correcto e incorrecto, 401 sin token o con token inválido, 403 para Ventas | `686483d1`, `8bb2ded8`, `c39146b7` |
+| RF-USR-01 a 05, RN-31 | T-032, T-033 | Prueba de RN-31 en `QuoteFlow.Domain.Tests`; prueba manual | `686483d1`, `ae0e51a5` |
+| RF-CLI-01 a 06, RN-21 | T-039, T-040 | QA por API y prueba manual | `686483d1`, `f3d2d522` |
+| RF-CAT-01 a 04 | T-042, T-043 | Prueba manual | `686483d1`, `1e2a2c8d` |
+| RF-PRO-01 a 04 | T-045, T-046 | `QuoteIssuingTests`: cambio de precio posterior; prueba manual | `21b5fd94`, `62697b71` |
+| RF-COT-06, RN-01 a 06, RN-17 (motor) | T-049, T-050 | **C-01 a C-19** en `QuoteFlow.Domain.Tests` | `cba8ed13` |
+| RF-COT-01 a 05 (borrador) | T-053 a T-056, T-064 | Prueba manual y demo | `4d9749cc`, `d536c3bf` |
+| RF-COT-07, RN-12, RN-13 (emisión) | T-057 a T-059 | `QuoteIssuingTests`: consecutivo `COT-AAAA-NNNNNN` y congelamiento | `686483d1`, `70b8cb0c`, `c39146b7` |
+| RF-COT-08 a 10 (cierre) | T-060, T-065 | QA por API y prueba manual | `70b8cb0c` |
+| RF-COT-11 (vencimiento) | T-061 | Proceso en segundo plano; QA | `686483d1` |
+| RF-COT-12 (duplicación) | T-062, T-067 | QA por API y prueba manual | `c82165bf` |
+| RF-COT-13, 14 (consulta) | T-063, T-066 | Prueba manual | `3e58145c`, `5a83153a` |
+| RF-DOC-01, 02, RN-36 | T-070 a T-073 | Vista previa y PDF en la demo | `14c626fb`, `6661e3d7` |
+| RF-IA-01 a 03 | T-075 a T-080 | Prueba manual con y sin clave de Gemini | `89261698` |
+| RF-CFG-01 a 03 | T-034 a T-036 | Prueba manual | `686483d1`, `fc9c55a8` |
+| RF-AUD-01, 02 | T-020, T-082, T-083 | `AuthTests` (403 en auditoría para Ventas); prueba manual | `ae0e51a5` |
+| RF-DSH-01 a 03 | T-084, T-085 | Prueba manual | `fc9c55a8` |
+| Datos iniciales y de demostración | T-018, T-034, T-041, T-090 | Verificación en `psql` | `4c02b71d`, `9fa8fe80` |
+| Documentación | T-095 a T-099 | Revisión contra la consigna del curso | `40045459` |
+
+**Comandos de comprobación:** `dotnet test` (backend completo), `dotnet test tests/QuoteFlow.Domain.Tests` (motor) y, en `frontend/`, `npm test`, `npm run typecheck` y `npm run lint`.
 
 ---
 
